@@ -18,6 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     tool_redirectplus
+ * @category    admin
  * @copyright   2025 G Wiz IT Solutions <support@gwizit.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_redirectplus';
-$plugin->release = '0.1.0';
-$plugin->version = 2025103000;
-$plugin->requires = 2022112800;
+$plugin->release = '1.2.0';
+$plugin->version = 2025103005;
+$plugin->requires = 2023100900; // Moodle 4.3 or later.
 $plugin->maturity = MATURITY_STABLE;

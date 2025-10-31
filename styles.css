@@ -1,0 +1,48 @@
+/**
+ * Styles for tool_redirectplus.
+ *
+ * @package     tool_redirectplus
+ * @copyright   2025 G Wiz IT Solutions <support@gwizit.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* Main table styling */
+#tool_redirectplus_report {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+#tool_redirectplus_report th {
+    font-weight: bold;
+    background-color: #f5f5f5;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+#tool_redirectplus_report td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+}
+
+#tool_redirectplus_report tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Action buttons */
+.tool-redirectplus-actions {
+    margin: 1rem 0;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    #tool_redirectplus_report {
+        font-size: 0.9em;
+    }
+    
+    #tool_redirectplus_report th,
+    #tool_redirectplus_report td {
+        padding: 6px;
+    }
+}

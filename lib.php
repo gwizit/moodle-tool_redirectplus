@@ -15,25 +15,14 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * Library functions for tool_redirectplus.
  *
  * @package     tool_redirectplus
- * @category    admin
  * @copyright   2025 G Wiz IT Solutions <support@gwizit.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($hassiteconfig) {
-    // Add link to Site Administration > General.
-    $ADMIN->add('root', new admin_externalpage(
-        'tool_redirectplus_manage',
-        new lang_string('pluginname', 'tool_redirectplus'),
-        new moodle_url('/admin/tool/redirectplus/index.php'),
-        'moodle/site:config'
-    ));
-
-    // No separate settings page needed - everything is in the main page with tabs.
-    $settings = null;
-}
+// No callback functions needed - 404 tracking is handled by error404.php
+// which is configured as the custom 404 page at the server level.
