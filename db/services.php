@@ -12,21 +12,26 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * External functions and service definitions for tool_redirectplus
  *
  * @package     tool_redirectplus
- * @category    admin
  * @copyright   2025 G Wiz IT Solutions <support@gwizit.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_redirectplus';
-$plugin->release = '1.3.3';
-$plugin->version = 2025110102;
-$plugin->requires = 2023100900; // Moodle 4.3 or later.
-$plugin->maturity = MATURITY_STABLE;
+$functions = [
+    'tool_redirectplus_test_404' => [
+        'classname' => 'tool_redirectplus\external\test_404',
+        'methodname' => 'execute',
+        'description' => 'Test 404 tracking configuration',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+        'capabilities' => 'moodle/site:config'
+    ],
+];

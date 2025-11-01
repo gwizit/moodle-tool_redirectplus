@@ -21,31 +21,27 @@
 
     Context variables required for this template:
     * error404_url - Full URL to error404.php
+    * wwwroot - Moodle root URL
     * strings - Language strings
 }}
 
-<div class="tab-pane" id="setup">
+<div class="tab-pane fade" id="setup">
     <h3>{{strings.setupinstructions}}</h3>
 
-    <div class="alert alert-info">
-        <p>{{strings.setupintro}}</p>
-        <p><strong>{{strings.your404url}}</strong> <code class="p-2 bg-light d-inline-block">{{error404_url}}</code></p>
-    </div>
-
-    <div class="mb-4">
-        <h4>{{strings.testtracking}}</h4>
-        <p>{{strings.testtracking_desc}}</p>
-        <a href="{{error404_url}}?url=/test-404-page" target="_blank" class="btn btn-secondary">{{strings.test404page}}</a>
-        <p class="mt-2"><small class="text-muted">{{strings.test404note}}</small></p>
+    <!-- 404 URL Display -->
+    <div class="alert alert-danger">
+        <h4 class="text-danger"><strong>{{strings.your404url}}</strong></h4>
+        <code class="p-2 bg-white d-inline-block" style="font-size: 1.1em;">{{error404_url}}</code>
     </div>
 
     <h4>{{strings.serverconfiguration}}</h4>
+    <p class="text-muted">{{strings.config_recommendation}}</p>
 
     <!-- Apache Instructions -->
     <div class="card mb-3">
-        <div class="card-header">
-            <a href="#" id="apacheToggle" class="text-decoration-none text-dark font-weight-bold">
-                {{strings.apache_htaccess}} ▼
+        <div class="card-header bg-success text-white">
+            <a href="#" id="apacheToggle" class="text-decoration-none text-white font-weight-bold">
+                <strong>{{strings.apache_method}}</strong> ({{strings.recommended}}) ▼
             </a>
         </div>
         <div id="collapseApache" class="collapse show">
@@ -59,9 +55,9 @@
 
     <!-- Nginx Instructions -->
     <div class="card mb-3">
-        <div class="card-header">
-            <a href="#" id="nginxToggle" class="text-decoration-none text-dark font-weight-bold">
-                {{strings.nginx}} ▶
+        <div class="card-header bg-success text-white">
+            <a href="#" id="nginxToggle" class="text-decoration-none text-white font-weight-bold">
+                <strong>{{strings.nginx_method}}</strong> ({{strings.recommended}}) ▶
             </a>
         </div>
         <div id="collapseNginx" class="collapse">
@@ -73,33 +69,72 @@
         </div>
     </div>
 
-    <!-- Plesk Instructions -->
+    <!-- .htaccess Manual Configuration Method -->
     <div class="card mb-3">
-        <div class="card-header">
-            <a href="#" id="pleskToggle" class="text-decoration-none text-dark font-weight-bold">
-                {{strings.plesk}} ▶
+        <div class="card-header bg-warning">
+            <a href="#" id="htaccessToggle" class="text-decoration-none text-dark font-weight-bold">
+                <strong>{{strings.htaccess_method}}</strong> ({{strings.fallback_only}}) ▶
             </a>
         </div>
-        <div id="collapsePlesk" class="collapse">
+        <div id="collapseHtaccess" class="collapse">
             <div class="card-body">
-                <p>{{strings.plesk_instructions}}</p>
-                <ol>
-                    <li>{{strings.plesk_step1}}</li>
-                    <li>{{strings.plesk_step2}}</li>
-                    <li>{{strings.plesk_step3}}</li>
-                    <li>ErrorDocument 404 {{error404_url}}?url=%{REQUEST_URI}</li>
-                </ol>
+                <div class="alert alert-danger">
+                    <strong>{{strings.htaccess_warning_title}}</strong>
+                    <p>{{{strings.htaccess_warning}}}</p>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong><i class="fa fa-info-circle"></i> {{strings.htaccess_backup_title}}</strong>
+                    <p>{{strings.htaccess_backup_warning}}</p>
+                </div>
+                
+                <h5>{{strings.htaccess_manual_instructions_title}}</h5>
+                <p>{{strings.htaccess_manual_step1}}</p>
+                <p>{{strings.htaccess_manual_step2}}</p>
+                
+                <pre class="bg-light p-3"><code>php_value auto_prepend_file "{{wwwroot}}/admin/tool/redirectplus/prepend.php"</code></pre>
+                
+                <p class="text-muted mt-2"><small>{{strings.htaccess_manual_note}}</small></p>
             </div>
+        </div>
+    </div>
+
+    <!-- Test Section -->
+    <div class="card mb-3 mt-4">
+        <div class="card-header bg-primary text-white">
+            <strong>{{strings.test_configuration}}</strong>
+        </div>
+        <div class="card-body">
+            <p>{{strings.test_configuration_desc}}</p>
+            <button type="button" id="btn-test-404" class="btn btn-primary">
+                <i class="fa fa-flask"></i> {{strings.test_404_tracking}}
+            </button>
+            <div id="test-result-container" class="mt-3"></div>
         </div>
     </div>
 </div>
 
 {{#js}}
-require(['tool_redirectplus/settings'], function(Settings) {
-    Settings.init({
-        apacheText: '{{strings.apache_htaccess}}',
-        nginxText: '{{strings.nginx}}',
-        pleskText: '{{strings.plesk}}'
+require(['tool_redirectplus/setup'], function(Setup) {
+    Setup.init({
+        wwwroot: '{{wwwroot}}',
+        error404url: '{{error404_url}}',
+        apacheText: '{{strings.apache_method}}',
+        nginxText: '{{strings.nginx_method}}',
+        htaccessText: '{{strings.htaccess_method}}',
+        strings: {
+            checking: '{{strings.checking_status}}',
+            enabled: '{{strings.htaccess_enabled}}',
+            disabled: '{{strings.htaccess_disabled}}',
+            enabling: '{{strings.enabling}}',
+            disabling: '{{strings.disabling}}',
+            success: '{{strings.operation_success}}',
+            error: '{{strings.operation_error}}',
+            testing: '{{strings.testing}}',
+            test_success: '{{strings.test_success}}',
+            test_failure: '{{strings.test_failure}}',
+            test_error: '{{strings.test_error}}'
+        }
     });
 });
 {{/js}}

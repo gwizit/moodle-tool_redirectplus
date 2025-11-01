@@ -78,18 +78,36 @@ $string['troubleshooting_desc'] = 'If you see "Unknown URL" in your error log, y
 $string['troubleshooting_variables'] = 'What to check:';
 
 // Server types.
-$string['apache_htaccess'] = 'Apache / .htaccess';
-$string['apache_instructions'] = 'Add this line to your .htaccess file in your Moodle root directory:';
+$string['config_recommendation'] = 'Apache and Nginx methods are recommended for best performance and reliability. Use the .htaccess method only if you do not have access to server configuration files.';
+$string['recommended'] = 'Recommended';
+$string['fallback_only'] = 'Fallback Only';
+
+$string['apache_method'] = 'Apache Server Configuration';
+$string['apache_instructions'] = 'Add this line to your Apache server configuration or virtual host file:';
 $string['apache_note'] = 'Important: The %{REQUEST_URI} variable automatically passes the original URL to the error handler. Make sure you copy the line exactly as shown above, including the ?url= parameter.';
+
+$string['nginx_method'] = 'Nginx Server Configuration';
 $string['nginx'] = 'Nginx';
 $string['nginx_instructions'] = 'Add this line to your Nginx server configuration block:';
 $string['nginx_note'] = 'Important: The $request_uri variable automatically passes the original URL to the error handler. Make sure you copy the line exactly as shown, including the ?url= parameter.';
-$string['plesk'] = 'Plesk Control Panel';
-$string['plesk_instructions'] = 'Follow these steps in Plesk:';
-$string['plesk_step1'] = 'Log in to your Plesk control panel';
-$string['plesk_step2'] = 'Go to Websites & Domains > your domain > Apache & nginx Settings';
-$string['plesk_step3'] = 'Scroll down to "Additional directives for HTTP" or "Additional nginx directives"';
-$string['plesk_step4'] = 'Add: ErrorDocument 404 {$a}?url=%{{REQUEST_URI}}';
+
+$string['htaccess_method'] = '.htaccess Auto-Prepend Method';
+$string['htaccess_warning_title'] = 'Warning: Often Does Not Work - Use Only as Last Resort';
+$string['htaccess_warning'] = 'This method uses php_value auto_prepend_file which:<ul><li>Does NOT work with PHP-FPM or FastCGI (most modern hosting)</li><li>May cause 500 Internal Server Error</li><li>Requires mod_php and specific Apache settings</li><li>Has performance implications</li></ul>Only attempt this if you cannot configure Apache or Nginx directly.';
+$string['htaccess_backup_title'] = 'Backup First!';
+$string['htaccess_backup_warning'] = 'Before modifying your .htaccess file, create a backup copy. If you get a 500 error after making changes, restore the backup immediately.';
+$string['htaccess_manual_instructions_title'] = 'Manual Configuration Steps';
+$string['htaccess_manual_step1'] = '1. Create a backup of your .htaccess file (if it exists)';
+$string['htaccess_manual_step2'] = '2. Add this line to the top of your .htaccess file in the Moodle root directory:';
+$string['htaccess_manual_note'] = 'Note: This method often fails on modern hosting. If your site returns a 500 error after adding this line, immediately remove it and restore your backup. Use the Apache or Nginx configuration methods instead.';
+
+$string['test_configuration'] = 'Test Your Configuration';
+$string['test_configuration_desc'] = 'Click the button below to test if 404 error tracking is working correctly. This will make a request to a non-existent URL and verify that it gets logged.';
+$string['test_404_tracking'] = 'Test 404 Tracking';
+$string['testing'] = 'Testing...';
+$string['test_success'] = 'Success!';
+$string['test_failure'] = 'Test Failed';
+$string['test_error'] = 'An error occurred during testing';
 
 // Error page.
 $string['error404title'] = 'Page Not Found - 404';
