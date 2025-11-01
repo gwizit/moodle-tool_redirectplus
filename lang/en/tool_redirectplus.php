@@ -51,20 +51,18 @@ $string['deleteduser'] = 'Deleted user';
 $string['unknownuser'] = 'Unknown user';
 
 // Settings tab.
-$string['settingsintro'] = 'Configure how users see 404 errors. By default, users will see your custom message below. Alternatively, you can redirect them to another page.';
 $string['error404behavior'] = '404 Error Page Behavior';
-$string['error404behavior_desc'] = 'Users will see the custom message below by default. If you provide a redirect URL, that will be used instead (redirect takes priority).';
-$string['custommessage'] = 'Custom 404 Message (Default Behavior)';
-$string['custommessage_desc'] = 'This message will be shown to users when they encounter a 404 error. You can use HTML to style it.';
-$string['custommessage_help'] = 'HTML is allowed. If left empty, a default "Page Not Found" message will be displayed. This is used unless you provide a redirect URL below.';
-$string['custommessage_placeholder'] = '<h2>Page Not Found</h2><p>Sorry, the page you are looking for could not be found.</p>';
-$string['orredirect'] = 'OR Redirect to Another Page';
-$string['redirecturl'] = 'Redirect URL (Optional)';
-$string['redirecturl_desc'] = 'If you prefer to send users to a different page instead of showing a custom message, enter the URL here. This takes priority over the custom message above.';
-$string['redirecturl_help'] = 'If this field has a URL, users will be automatically redirected there instead of seeing the custom message. Leave empty to use the custom message.';
+$string['behavior'] = 'Choose behavior';
+$string['behavior_desc'] = 'Select how you want to handle 404 errors on your site.';
+$string['behaviormessage'] = 'Show custom message';
+$string['behaviorredirect'] = 'Redirect to another page';
+$string['custommessage'] = 'Custom 404 Message';
+$string['custommessage_help'] = 'Enter the HTML message to display to users when they encounter a 404 error. If left empty, a default "Page Not Found" message will be shown.';
+$string['redirecturl'] = 'Redirect URL';
+$string['redirecturl_help'] = 'Enter the full URL where users should be redirected when they encounter a 404 error.';
 $string['savesettings'] = 'Save Settings';
 $string['settingssaved'] = 'Settings saved successfully.';
-$string['invalidurl'] = 'Invalid redirect URL format. Please enter a valid URL or leave it empty.';
+$string['invalidurl'] = 'Invalid redirect URL format. Please enter a valid URL.';
 
 // Setup tab.
 $string['setupinstructions'] = 'Setup Instructions';

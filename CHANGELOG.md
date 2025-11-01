@@ -2,6 +2,25 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [1.3.0] - 2025-10-31
+
+### Changed - Enhanced Settings Interface
+- **Behavior Dropdown**: Settings page now uses a dropdown to select between "Show custom message" or "Redirect to another page"
+- **Cleaner Interface**: Removed blue info box and redundant descriptive text
+- **Dynamic Display**: Only the relevant field (message editor or URL input) is shown based on selected behavior
+- **Better UX**: Simplified workflow makes it clearer how to configure 404 handling
+
+### Improved
+- Settings form now saves behavior preference in config
+- JavaScript toggles between message and redirect sections dynamically
+- More intuitive for administrators to configure
+
+### Technical
+- **AMD Modules**: JavaScript moved to proper AMD module structure (amd/src and amd/build)
+- **Gruntfile**: Added Gruntfile.js for automated minification with grunt
+- **Build Process**: Use `npm install` then `grunt amd` to rebuild JavaScript from source
+- Package script updated to exclude node_modules and development files
+
 ## [1.2.0] - 2025-10-30
 
 ### CRITICAL FIX - URL Tracking Now Works!

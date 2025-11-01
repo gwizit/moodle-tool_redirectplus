@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_redirectplus/report_tab
+
+    Report tab template for Redirect Plus plugin.
+
+    Context variables required for this template:
+    * has_errors - Boolean if errors exist
+    * strings - Language strings
+    * table_html - HTML table content
+    * paging_html - Pagination bar HTML
+    * deleteall_url - URL for delete all action
+}}
+
+<div class="tab-pane active" id="report">
+    <h3>{{strings.report404}}</h3>
+    <p>{{strings.report404desc}}</p>
+
+    {{#has_errors}}
+    <div class="tool-redirectplus-actions">
+        <a href="{{{deleteall_url}}}" class="btn btn-danger mb-3">{{strings.deleteallrecords}}</a>
+    </div>
+
+    {{{table_html}}}
+
+    {{{paging_html}}}
+    {{/has_errors}}
+
+    {{^has_errors}}
+    <div class="alert alert-info">{{strings.no404errors}}</div>
+    {{/has_errors}}
+</div>

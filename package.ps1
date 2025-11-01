@@ -78,7 +78,12 @@ $tool_redirectplus_exclude = @(
     ".idea",
     "*.log",
     "Thumbs.db",
-    ".DS_Store"
+    ".DS_Store",
+    "node_modules",
+    "package.json",
+    "package-lock.json",
+    "Gruntfile.js",
+    "textplus"
 )
 
 # Create the ZIP file

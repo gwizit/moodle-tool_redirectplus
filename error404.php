@@ -87,11 +87,12 @@ try {
 }
 
 // Get plugin configuration.
+$tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
 $tool_redirectplus_redirect_url = get_config('tool_redirectplus', 'redirect_url');
 $tool_redirectplus_custom_message = get_config('tool_redirectplus', 'custom_message');
 
-// If redirect URL is set, redirect immediately (takes priority over custom message).
-if (!empty($tool_redirectplus_redirect_url)) {
+// Handle based on behavior setting.
+if ($tool_redirectplus_behavior === 'redirect' && !empty($tool_redirectplus_redirect_url)) {
     redirect($tool_redirectplus_redirect_url);
     exit;
 }

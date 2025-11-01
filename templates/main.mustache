@@ -1,0 +1,45 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_redirectplus/main
+
+    Main page template for Redirect Plus plugin with tabs.
+
+    Context variables required for this template:
+    * report_tab - Report tab HTML content
+    * settings_tab - Settings tab HTML content
+    * setup_tab - Setup tab HTML content
+    * strings - Language strings
+}}
+
+<ul class="nav nav-tabs mb-3" id="redirectplus-tabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="report-tab" data-toggle="tab" href="#report" role="tab">{{strings.tabreport}}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab">{{strings.tabsettings}}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="setup-tab" data-toggle="tab" href="#setup" role="tab">{{strings.tabsetup}}</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="redirectplus-tab-content">
+    {{{report_tab}}}
+    {{{settings_tab}}}
+    {{{setup_tab}}}
+</div>

@@ -130,13 +130,14 @@ View all recorded 404 errors with:
 
 Configure how 404 errors are handled:
 
-**Enable/Disable Tracking:**
-- Toggle 404 error logging on or off
+**Choose Behavior:**
+- Use the dropdown to select either:
+  - **Show custom message** (default): Display a custom HTML message on the error page
+  - **Redirect to another page**: Automatically redirect users to a different URL
 
-**404 Error Behavior:**
-- **Redirect Option**: Automatically redirect users to another page (e.g., your main 404 page)
-- **Custom Message**: Display a custom HTML message on the error page
-- If redirect is disabled and no custom message is set, a default 404 message appears
+**Depending on your choice:**
+- **Custom Message**: A rich text editor appears where you can create your 404 message with HTML formatting
+- **Redirect URL**: A simple URL field appears where you enter the destination page
 
 **Save your settings** when done.
 
@@ -215,6 +216,27 @@ This data is used solely for site administration and debugging purposes. Site ad
 - The plugin automatically uses pagination (50 records per page)
 - Consider periodically deleting old records using the "Delete All Records" feature
 - Records are indexed by `timecreated` and `userid` for optimal query performance
+
+## Development ##
+
+### JavaScript Development ###
+
+This plugin uses AMD modules for JavaScript. To modify JavaScript files:
+
+1. **Install Node.js** (https://nodejs.org/)
+2. **Install dependencies**: `npm install`
+3. **Edit source files** in `amd/src/` directory
+4. **Build minified versions**: `grunt amd`
+
+The build process:
+- Source files: `amd/src/*.js`
+- Minified output: `amd/build/*.min.js`
+- Grunt automatically minifies and optimizes the code
+
+To watch for changes and auto-build:
+```bash
+grunt watch
+```
 
 ## Support ##
 

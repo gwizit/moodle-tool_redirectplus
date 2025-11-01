@@ -50,15 +50,19 @@ if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALP
     $tool_redirectplus_custom_message = optional_param('custom_message', '', PARAM_RAW);
     $tool_redirectplus_custom_message_format = optional_param('custom_message_format', FORMAT_HTML, PARAM_INT);
 
+    // Save behavior choice.
     set_config('behavior', $tool_redirectplus_behavior, 'tool_redirectplus');
 
+    // Validate and save based on behavior.
     if ($tool_redirectplus_behavior === 'redirect') {
+        // Validate URL format.
         if (!empty($tool_redirectplus_redirect_url) && filter_var($tool_redirectplus_redirect_url, FILTER_VALIDATE_URL)) {
             set_config('redirect_url', $tool_redirectplus_redirect_url, 'tool_redirectplus');
         } else if (!empty($tool_redirectplus_redirect_url)) {
             redirect($PAGE->url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
+        // Using custom message.
         set_config('custom_message', $tool_redirectplus_custom_message, 'tool_redirectplus');
         set_config('custom_message_format', $tool_redirectplus_custom_message_format, 'tool_redirectplus');
     }
@@ -110,6 +114,24 @@ if ($tool_redirectplus_deleteall && confirm_sesskey()) {
     }
 }
 
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('pluginname', 'tool_redirectplus'));
+
+// Create tabs using Bootstrap nav-tabs (client-side switching).
+echo '<ul class="nav nav-tabs mb-3" id="redirectplus-tabs" role="tablist">';
+echo '<li class="nav-item">';
+echo '<a class="nav-link active" id="report-tab" data-toggle="tab" href="#report" role="tab">'. get_string('tabreport', 'tool_redirectplus') .'</a>';
+echo '</li>';
+echo '<li class="nav-item">';
+echo '<a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab">'. get_string('tabsettings', 'tool_redirectplus') .'</a>';
+echo '</li>';
+echo '<li class="nav-item">';
+echo '<a class="nav-link" id="setup-tab" data-toggle="tab" href="#setup" role="tab">'. get_string('tabsetup', 'tool_redirectplus') .'</a>';
+echo '</li>';
+echo '</ul>';
+
+echo '<div class="tab-content" id="redirectplus-tab-content">';
+
 // Get renderer.
 $tool_redirectplus_renderer = $PAGE->get_renderer('tool_redirectplus');
 
@@ -118,6 +140,7 @@ $tool_redirectplus_totalcount = $DB->count_records('tool_redirectplus_404');
 $tool_redirectplus_has_errors = $tool_redirectplus_totalcount > 0;
 
 if ($tool_redirectplus_has_errors) {
+    // Build table HTML.
     $tool_redirectplus_table = new html_table();
     $tool_redirectplus_table->head = [
         get_string('url', 'tool_redirectplus'),
@@ -131,18 +154,21 @@ if ($tool_redirectplus_has_errors) {
     $tool_redirectplus_table->attributes['class'] = 'admintable generaltable';
     $tool_redirectplus_table->id = 'tool_redirectplus_report';
 
+    // Get records.
     $tool_redirectplus_records = $DB->get_records('tool_redirectplus_404', null, 'timecreated DESC',
         '*', $tool_redirectplus_page * $tool_redirectplus_perpage, $tool_redirectplus_perpage);
 
     foreach ($tool_redirectplus_records as $tool_redirectplus_record) {
         $tool_redirectplus_row = [];
 
+        // URL.
         $tool_redirectplus_row[] = html_writer::link(
             $CFG->wwwroot . $tool_redirectplus_record->url,
             s($tool_redirectplus_record->url),
             ['target' => '_blank']
         );
 
+        // Referrer.
         $tool_redirectplus_referrer = $tool_redirectplus_record->referrer ?: '-';
         if ($tool_redirectplus_referrer !== '-') {
             $tool_redirectplus_row[] = html_writer::link(
@@ -154,6 +180,7 @@ if ($tool_redirectplus_has_errors) {
             $tool_redirectplus_row[] = '-';
         }
 
+        // User.
         if ($tool_redirectplus_record->userid > 0) {
             $tool_redirectplus_user = $DB->get_record('user', ['id' => $tool_redirectplus_record->userid]);
             if ($tool_redirectplus_user) {
@@ -165,8 +192,10 @@ if ($tool_redirectplus_has_errors) {
             $tool_redirectplus_row[] = get_string('guest');
         }
 
+        // IP Address.
         $tool_redirectplus_row[] = s($tool_redirectplus_record->ip);
 
+        // User Agent - truncate if too long.
         $tool_redirectplus_useragent = $tool_redirectplus_record->useragent ?: '-';
         if (strlen($tool_redirectplus_useragent) > 60) {
             $tool_redirectplus_useragent = substr($tool_redirectplus_useragent, 0, 60) . '...';
@@ -175,8 +204,10 @@ if ($tool_redirectplus_has_errors) {
             'title' => s($tool_redirectplus_record->useragent),
         ]);
 
+        // Time created.
         $tool_redirectplus_row[] = userdate($tool_redirectplus_record->timecreated);
 
+        // Actions.
         $tool_redirectplus_deleteurl = new moodle_url($PAGE->url, [
             'delete' => $tool_redirectplus_record->id,
             'sesskey' => sesskey(),
@@ -213,7 +244,7 @@ $tool_redirectplus_report_data = [
     'deleteall_url' => $tool_redirectplus_deleteall_url->out(false),
 ];
 
-$tool_redirectplus_report_tab = $tool_redirectplus_renderer->render_report_tab($tool_redirectplus_report_data);
+echo $tool_redirectplus_renderer->render_report_tab($tool_redirectplus_report_data);
 
 // SETTINGS TAB - Build data.
 $tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
@@ -254,7 +285,7 @@ $tool_redirectplus_settings_data = [
     ],
 ];
 
-$tool_redirectplus_settings_tab = $tool_redirectplus_renderer->render_settings_tab($tool_redirectplus_settings_data);
+echo $tool_redirectplus_renderer->render_settings_tab($tool_redirectplus_settings_data);
 
 // SETUP TAB - Build data.
 $tool_redirectplus_error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
@@ -284,21 +315,8 @@ $tool_redirectplus_setup_data = [
     ],
 ];
 
-$tool_redirectplus_setup_tab = $tool_redirectplus_renderer->render_setup_tab($tool_redirectplus_setup_data);
+echo $tool_redirectplus_renderer->render_setup_tab($tool_redirectplus_setup_data);
 
-// Render main page with all tabs.
-$tool_redirectplus_main_data = [
-    'report_tab' => $tool_redirectplus_report_tab,
-    'settings_tab' => $tool_redirectplus_settings_tab,
-    'setup_tab' => $tool_redirectplus_setup_tab,
-    'strings' => [
-        'tabreport' => get_string('tabreport', 'tool_redirectplus'),
-        'tabsettings' => get_string('tabsettings', 'tool_redirectplus'),
-        'tabsetup' => get_string('tabsetup', 'tool_redirectplus'),
-    ],
-];
+echo '</div>'; // End tab-content.
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'tool_redirectplus'));
-echo $tool_redirectplus_renderer->render_main_page($tool_redirectplus_main_data);
 echo $OUTPUT->footer();

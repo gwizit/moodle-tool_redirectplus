@@ -1,0 +1,26 @@
+{
+  "name": "moodle-tool_redirectplus",
+  "version": "1.3.0",
+  "description": "Redirect Plus - Moodle 404 error tracking plugin",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GrahamPECS/redirectplus"
+  },
+  "keywords": [
+    "moodle",
+    "404",
+    "error",
+    "tracking"
+  ],
+  "author": "G Wiz IT Solutions",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "grunt": "^1.5.3",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-contrib-watch": "^1.1.0"
+  }
+}
