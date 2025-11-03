@@ -28,9 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Redirect Plus';
 
 // Tab names.
-$string['tabreport'] = 'Error Report';
+$string['tabreport'] = '404 Errors';
 $string['tabsettings'] = 'Settings';
 $string['tabsetup'] = 'Setup Instructions';
+$string['viewsetupinstructions'] = 'View setup instructions';
+$string['hidesetupinstructions'] = 'Hide setup instructions';
 
 // Report tab.
 $string['report404'] = '404 Error Report';
@@ -102,12 +104,14 @@ $string['htaccess_manual_step2'] = '2. Add this line to the top of your .htacces
 $string['htaccess_manual_note'] = 'Note: This method often fails on modern hosting. If your site returns a 500 error after adding this line, immediately remove it and restore your backup. Use the Apache or Nginx configuration methods instead.';
 
 $string['test_configuration'] = 'Test Your Configuration';
-$string['test_configuration_desc'] = 'Click the button below to test if 404 error tracking is working correctly. This will make a request to a non-existent URL and verify that it gets logged.';
-$string['test_404_tracking'] = 'Test 404 Tracking';
+$string['test_configuration_desc'] = 'Use the automated test below or manually test by visiting a non-existent URL in a new browser tab.';
+$string['test_404_tracking'] = 'Run Automated Test';
 $string['testing'] = 'Testing...';
-$string['test_success'] = 'Success!';
+$string['test_success'] = 'Test Passed!';
 $string['test_failure'] = 'Test Failed';
 $string['test_error'] = 'An error occurred during testing';
+$string['manual_test'] = 'Manual Test Alternative';
+$string['manual_test_desc'] = 'Open a new browser tab and visit a non-existent URL like: {$a}. Then check the 404 Errors tab to see if it was logged.';
 
 // Error page.
 $string['error404title'] = 'Page Not Found - 404';

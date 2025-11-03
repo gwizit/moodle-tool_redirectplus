@@ -44,16 +44,6 @@ class tool_redirectplus_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Render the setup tab
-     *
-     * @param array $data Template data
-     * @return string HTML output
-     */
-    public function render_setup_tab($data) {
-        return $this->render_from_template('tool_redirectplus/setup_tab', $data);
-    }
-
-    /**
      * Render the report tab
      *
      * @param array $data Template data

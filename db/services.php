@@ -25,10 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'tool_redirectplus_test_404' => [
-        'classname' => 'tool_redirectplus\external\test_404',
+    'tool_redirectplus_check_404_url' => [
+        'classname' => 'tool_redirectplus\external\check_404_url',
         'methodname' => 'execute',
-        'description' => 'Test 404 tracking configuration',
+        'description' => 'Check if a specific URL was logged as a 404 error',
         'type' => 'read',
         'ajax' => true,
         'loginrequired' => true,

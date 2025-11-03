@@ -25,10 +25,127 @@
     * behavior - Current behavior setting
     * custom_message - Custom message content
     * redirect_url - Redirect URL
+    * error404_url - Full URL to error404.php
+    * wwwroot - Moodle root URL
     * strings - Language strings
 }}
 
 <div class="tab-pane fade" id="settings">
+    
+    <!-- Setup Instructions Section - Collapsible -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <button type="button" id="toggleSetupInstructions" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
+                <i class="fa fa-chevron-down" id="setupIcon"></i> <strong>{{strings.viewsetupinstructions}}</strong>
+            </button>
+        </div>
+        <div id="setupInstructionsContent" class="collapse">
+            <div class="card-body">
+                <h4>{{strings.setupinstructions}}</h4>
+
+                <!-- 404 URL Display -->
+                <div class="alert alert-danger">
+                    <h5 class="text-danger"><strong>{{strings.your404url}}</strong></h5>
+                    <code class="p-2 bg-white d-inline-block" style="font-size: 1.1em;">{{error404_url}}</code>
+                </div>
+
+                <h5>{{strings.serverconfiguration}}</h5>
+                <p class="text-muted">{{strings.config_recommendation}}</p>
+
+                <!-- Apache Instructions -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <a href="#" id="apacheToggle" class="text-decoration-none text-white font-weight-bold">
+                            <strong>{{strings.apache_method}}</strong> ({{strings.recommended}}) ▼
+                        </a>
+                    </div>
+                    <div id="collapseApache" class="collapse show">
+                        <div class="card-body">
+                            <p>{{strings.apache_instructions}}</p>
+                            <pre><code>ErrorDocument 404 {{error404_url}}?url=%{REQUEST_URI}</code></pre>
+                            <p class="text-muted mt-2"><small>{{strings.apache_note}}</small></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nginx Instructions -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <a href="#" id="nginxToggle" class="text-decoration-none text-white font-weight-bold">
+                            <strong>{{strings.nginx_method}}</strong> ({{strings.recommended}}) ▶
+                        </a>
+                    </div>
+                    <div id="collapseNginx" class="collapse">
+                        <div class="card-body">
+                            <p>{{strings.nginx_instructions}}</p>
+                            <pre><code>error_page 404 {{error404_url}}?url=$request_uri;</code></pre>
+                            <p class="text-muted mt-2"><small>{{strings.nginx_note}}</small></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- .htaccess Manual Configuration Method -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning">
+                        <a href="#" id="htaccessToggle" class="text-decoration-none text-dark font-weight-bold">
+                            <strong>{{strings.htaccess_method}}</strong> ({{strings.fallback_only}}) ▶
+                        </a>
+                    </div>
+                    <div id="collapseHtaccess" class="collapse">
+                        <div class="card-body">
+                            <div class="alert alert-danger">
+                                <strong>{{strings.htaccess_warning_title}}</strong>
+                                <p>{{{strings.htaccess_warning}}}</p>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <strong><i class="fa fa-info-circle"></i> {{strings.htaccess_backup_title}}</strong>
+                                <p>{{strings.htaccess_backup_warning}}</p>
+                            </div>
+                            
+                            <h6>{{strings.htaccess_manual_instructions_title}}</h6>
+                            <p>{{strings.htaccess_manual_step1}}</p>
+                            <p>{{strings.htaccess_manual_step2}}</p>
+                            
+                            <pre class="bg-light p-3"><code>php_value auto_prepend_file "{{wwwroot}}/admin/tool/redirectplus/prepend.php"</code></pre>
+                            
+                            <p class="text-muted mt-2"><small>{{strings.htaccess_manual_note}}</small></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Section -->
+                <div class="card mb-3 mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <strong>{{strings.test_configuration}}</strong>
+                    </div>
+                    <div class="card-body">
+                        <h5>Automated Browser Test</h5>
+                        <p>Click the button below to open a test page in a new window. The test will verify that the 404 error was logged to the database:</p>
+                        <button type="button" id="btn-test-404" class="btn btn-primary btn-lg">
+                            <i class="fa fa-flask"></i> {{strings.test_404_tracking}}
+                        </button>
+                        <div id="test-result-container" class="mt-3"></div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="alert alert-info">
+                            <strong><i class="fa fa-info-circle"></i> {{strings.manual_test}}</strong>
+                            <p class="mb-2">You can also manually test by clicking this link (opens in new tab):</p>
+                            <p class="mb-2">
+                                <a href="#" id="manual-test-link" class="btn btn-outline-primary" target="_blank">
+                                    <i class="fa fa-external-link"></i> Open Manual Test Page
+                                </a>
+                            </p>
+                            <p class="mt-2 mb-0"><small>After clicking, check the "404 Errors" tab to see if it was logged.</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Form Section -->
     <form method="post" action="{{{form_action}}}" class="mform">
         <input type="hidden" name="sesskey" value="{{sesskey}}">
         <input type="hidden" name="tab" value="settings">
@@ -69,9 +186,19 @@
 {{#js}}
 require(['tool_redirectplus/settings', 'jquery'], function(Settings, $) {
     Settings.init({
-        apacheText: '{{strings.apache_htaccess}}',
-        nginxText: '{{strings.nginx}}',
-        pleskText: '{{strings.plesk}}'
+        wwwroot: '{{wwwroot}}',
+        error404url: '{{error404_url}}',
+        apacheText: '{{strings.apache_method}}',
+        nginxText: '{{strings.nginx_method}}',
+        htaccessText: '{{strings.htaccess_method}}',
+        strings: {
+            viewsetupinstructions: '{{strings.viewsetupinstructions}}',
+            hidesetupinstructions: '{{strings.hidesetupinstructions}}',
+            testing: '{{strings.testing}}',
+            test_success: '{{strings.test_success}}',
+            test_failure: '{{strings.test_failure}}',
+            test_error: '{{strings.test_error}}'
+        }
     });
     
     // Initialize TinyMCE editor for the custom message field

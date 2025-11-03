@@ -215,10 +215,11 @@ $tool_redirectplus_report_data = [
 
 $tool_redirectplus_report_tab = $tool_redirectplus_renderer->render_report_tab($tool_redirectplus_report_data);
 
-// SETTINGS TAB - Build data.
+// SETTINGS TAB - Build data (combined with setup instructions).
 $tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
 $tool_redirectplus_redirect_url = get_config('tool_redirectplus', 'redirect_url');
 $tool_redirectplus_custom_message = get_config('tool_redirectplus', 'custom_message');
+$tool_redirectplus_error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
 
 // Initialize TinyMCE editor.
 $tool_redirectplus_editor = editors_get_preferred_editor(FORMAT_HTML);
@@ -237,6 +238,8 @@ $tool_redirectplus_settings_data = [
     'behavior_redirect' => $tool_redirectplus_behavior === 'redirect',
     'custom_message' => $tool_redirectplus_custom_message,
     'redirect_url' => $tool_redirectplus_redirect_url,
+    'error404_url' => $tool_redirectplus_error404_url,
+    'wwwroot' => $CFG->wwwroot,
     'strings' => [
         'error404behavior' => get_string('error404behavior', 'tool_redirectplus'),
         'behavior' => get_string('behavior', 'tool_redirectplus'),
@@ -248,21 +251,8 @@ $tool_redirectplus_settings_data = [
         'redirecturl' => get_string('redirecturl', 'tool_redirectplus'),
         'redirecturl_help' => get_string('redirecturl_help', 'tool_redirectplus'),
         'savesettings' => get_string('savesettings', 'tool_redirectplus'),
-        'apache_htaccess' => get_string('apache_htaccess', 'tool_redirectplus'),
-        'nginx' => get_string('nginx', 'tool_redirectplus'),
-        'plesk' => get_string('plesk', 'tool_redirectplus'),
-    ],
-];
-
-$tool_redirectplus_settings_tab = $tool_redirectplus_renderer->render_settings_tab($tool_redirectplus_settings_data);
-
-// SETUP TAB - Build data.
-$tool_redirectplus_error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
-
-$tool_redirectplus_setup_data = [
-    'error404_url' => $tool_redirectplus_error404_url,
-    'wwwroot' => $CFG->wwwroot,
-    'strings' => [
+        'viewsetupinstructions' => get_string('viewsetupinstructions', 'tool_redirectplus'),
+        'hidesetupinstructions' => get_string('hidesetupinstructions', 'tool_redirectplus'),
         'setupinstructions' => get_string('setupinstructions', 'tool_redirectplus'),
         'your404url' => get_string('your404url', 'tool_redirectplus'),
         'serverconfiguration' => get_string('serverconfiguration', 'tool_redirectplus'),
@@ -294,17 +284,15 @@ $tool_redirectplus_setup_data = [
     ],
 ];
 
-$tool_redirectplus_setup_tab = $tool_redirectplus_renderer->render_setup_tab($tool_redirectplus_setup_data);
+$tool_redirectplus_settings_tab = $tool_redirectplus_renderer->render_settings_tab($tool_redirectplus_settings_data);
 
-// Render main page with all tabs.
+// Render main page with tabs.
 $tool_redirectplus_main_data = [
     'report_tab' => $tool_redirectplus_report_tab,
     'settings_tab' => $tool_redirectplus_settings_tab,
-    'setup_tab' => $tool_redirectplus_setup_tab,
     'strings' => [
         'tabreport' => get_string('tabreport', 'tool_redirectplus'),
         'tabsettings' => get_string('tabsettings', 'tool_redirectplus'),
-        'tabsetup' => get_string('tabsetup', 'tool_redirectplus'),
     ],
 ];
 

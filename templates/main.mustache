@@ -22,7 +22,6 @@
     Context variables required for this template:
     * report_tab - Report tab HTML content
     * settings_tab - Settings tab HTML content
-    * setup_tab - Setup tab HTML content
     * strings - Language strings
 }}
 
@@ -33,13 +32,9 @@
     <li class="nav-item">
         <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab">{{strings.tabsettings}}</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" id="setup-tab" data-toggle="tab" href="#setup" role="tab">{{strings.tabsetup}}</a>
-    </li>
 </ul>
 
 <div class="tab-content" id="redirectplus-tab-content">
     {{{report_tab}}}
     {{{settings_tab}}}
-    {{{setup_tab}}}
 </div>
