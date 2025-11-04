@@ -20,13 +20,27 @@
  * This file is prepended to all PHP requests when using the .htaccess method.
  * It registers a shutdown function to check for 404 errors.
  *
+ * NOTE: Custom redirects for existing pages are now handled by Moodle's callback
+ * system (tool_redirectplus_after_config in lib.php), which works with any PHP setup
+ * including PHP-FPM and FastCGI.
+ *
+ * This file is now ONLY needed for 404 error detection if you cannot configure
+ * your web server (Apache ErrorDocument or Nginx error_page).
+ *
+ * Setup: Add this line to .htaccess in Moodle root:
+ *   php_value auto_prepend_file "/path/to/moodle/admin/tool/redirectplus/prepend.php"
+ *
+ * Note: This only works with mod_php. Does NOT work with PHP-FPM or FastCGI.
+ *       For 404 detection, use Apache ErrorDocument or Nginx error_page instead (recommended).
+ *
  * @package     tool_redirectplus
  * @copyright   2025 G Wiz IT Solutions <support@gwizit.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Only proceed if this is a potential 404 error
+// Only proceed if this is not CLI.
 if (php_sapi_name() !== 'cli') {
+    // Register shutdown function to check for 404 errors.
     register_shutdown_function('tool_redirectplus_check_404');
 }
 

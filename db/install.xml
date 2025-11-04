@@ -23,5 +23,22 @@
         <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="tool_redirectplus_redirects" COMMENT="Stores custom URL redirects with optional parameters">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="source_url" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The source URL pattern to match (without domain)"/>
+        <FIELD NAME="redirect_options" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false" COMMENT="JSON string containing redirect rules and parameters"/>
+        <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether this redirect is enabled (1) or disabled (0)"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp when the redirect was created"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp when the redirect was last modified"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="source_url_idx" UNIQUE="false" FIELDS="source_url"/>
+        <INDEX NAME="enabled_idx" UNIQUE="false" FIELDS="enabled"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

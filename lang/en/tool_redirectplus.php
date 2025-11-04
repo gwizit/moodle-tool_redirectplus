@@ -29,6 +29,7 @@ $string['pluginname'] = 'Redirect Plus';
 
 // Tab names.
 $string['tabreport'] = '404 Errors';
+$string['tabredirects'] = 'Custom Redirects';
 $string['tabsettings'] = 'Settings';
 $string['tabsetup'] = 'Setup Instructions';
 $string['viewsetupinstructions'] = 'View setup instructions';
@@ -62,6 +63,8 @@ $string['custommessage'] = 'Custom 404 Message';
 $string['custommessage_help'] = 'Enter the HTML message to display to users when they encounter a 404 error. If left empty, a default "Page Not Found" message will be shown.';
 $string['redirecturl'] = 'Redirect URL';
 $string['redirecturl_help'] = 'Enter the full URL where users should be redirected when they encounter a 404 error.';
+$string['disableredirectadmin'] = 'Disable redirect for administrators';
+$string['disableredirectadmin_help'] = 'When enabled, any custom redirect will not work for administrators when they are signed in. This is useful for testing and troubleshooting.';
 $string['savesettings'] = 'Save Settings';
 $string['settingssaved'] = 'Settings saved successfully.';
 $string['invalidurl'] = 'Invalid redirect URL format. Please enter a valid URL.';
@@ -128,3 +131,50 @@ $string['privacy:metadata:tool_redirectplus_404:referrer'] = 'The URL the user c
 $string['privacy:metadata:tool_redirectplus_404:ip'] = 'The IP address of the user.';
 $string['privacy:metadata:tool_redirectplus_404:useragent'] = 'The user agent (browser) information.';
 $string['privacy:metadata:tool_redirectplus_404:timecreated'] = 'The time when the 404 error was encountered.';
+
+// Custom Redirects tab.
+$string['customredirects'] = 'Custom URL Redirects';
+$string['customredirects_desc'] = 'Create custom redirects for specific URLs with optional conditional parameters based on user login status and language. These redirects work for BOTH existing pages (like homepage or /faq/) and 404 errors automatically using Moodle\'s callback system.';
+$string['addredirect'] = 'Add New Redirect';
+$string['editredirect'] = 'Edit Redirect';
+$string['deleteredirect'] = 'Delete Redirect';
+$string['deleteredirectconfirm'] = 'Are you sure you want to delete this redirect?';
+$string['redirectdeleted'] = 'Redirect deleted successfully.';
+$string['redirectsaved'] = 'Redirect saved successfully.';
+$string['noredirects'] = 'No custom redirects have been created yet.';
+$string['sourceurl'] = 'Source URL';
+$string['sourceurl_help'] = 'The URL path to match (without the domain). Example: / or /faq/ or /old-page. This works for BOTH existing pages and 404 errors automatically. The plugin intercepts requests early in the page load using Moodle\'s callback system.';
+$string['destinationurl'] = 'Destination URL';
+$string['destinationurl_help'] = 'The full URL where users should be redirected.';
+$string['enableredirect'] = 'Enable this redirect';
+$string['redirectparameters'] = 'Conditional Parameters';
+$string['redirectparameters_help'] = 'Optional: Add conditions based on user login status or language.';
+$string['useloginparam'] = 'Use login status parameter';
+$string['useloginparam_help'] = 'When enabled, redirect users to different URLs based on whether they are logged in or not.';
+$string['loggedin_url'] = 'URL for logged in users';
+$string['loggedout_url'] = 'URL for guests/not logged in';
+$string['uselanguageparam'] = 'Use language parameter';
+$string['uselanguageparam_help'] = 'When enabled, redirect users to different URLs based on their browser language.';
+$string['addlanguagerule'] = 'Add Language Rule';
+$string['removelanguagerule'] = 'Remove';
+$string['languagecode'] = 'Language Code';
+$string['languagecode_help'] = 'ISO 639-1 language code (e.g., en, es, fr, de, ja)';
+$string['languageurl'] = 'Redirect URL for this language';
+$string['defaultlanguageurl'] = 'Default URL (if language not matched)';
+$string['status'] = 'Status';
+$string['enabled'] = 'Enabled';
+$string['disabled'] = 'Disabled';
+$string['lastmodified'] = 'Last Modified';
+$string['saveredirect'] = 'Save Redirect';
+$string['cancel'] = 'Cancel';
+$string['parametersnote'] = 'Note: Parameters are evaluated in order: Login status first, then language. If both are enabled, the URL will be determined by both conditions.';
+$string['redirectoptions'] = 'Redirect Options';
+$string['basicredirect'] = 'Simple redirect to one URL';
+$string['conditionalredirect'] = 'Conditional redirect with parameters';
+$string['redirectexamples'] = 'Example Use Cases';
+$string['redirectexamples_desc'] = '<ul>
+<li><strong>Homepage language redirect:</strong> Source URL: <code>/</code> - Redirect Spanish speakers to <code>/es/</code>, French to <code>/fr/</code>, others to <code>/en/</code></li>
+<li><strong>FAQ for guests:</strong> Source URL: <code>/faq/</code> - Redirect logged-out users to <code>/guest-faq.html</code>, logged-in users stay on page</li>
+<li><strong>Members area:</strong> Source URL: <code>/members/</code> - Redirect logged-in users to dashboard, logged-out users to login page</li>
+<li><strong>404 redirects:</strong> Source URL: <code>/old-page</code> - Redirect to <code>/new-page</code></li>
+</ul>';

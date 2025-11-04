@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,21 +12,22 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Hook callbacks configuration for Redirect Plus plugin.
  *
  * @package     tool_redirectplus
- * @category    admin
  * @copyright   2025 G Wiz IT Solutions <support@gwizit.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_redirectplus';
-$plugin->release = '1.5.0';
-$plugin->version = 2025110303;
-$plugin->requires = 2023100900; // Moodle 4.3 or later.
-$plugin->maturity = MATURITY_STABLE;
+$callbacks = [
+    [
+        'hook' => \core\hook\after_config::class,
+        'callback' => '\tool_redirectplus\hook_callbacks::after_config',
+        'priority' => 500,
+    ],
+];

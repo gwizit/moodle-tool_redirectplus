@@ -2,6 +2,74 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [1.5.0] - 2025-11-03
+
+### Major Feature - Custom URL Redirects with Conditional Parameters
+
+**NEW: Redirect ANY page based on user conditions!**
+
+This release adds powerful custom redirect functionality that works for BOTH existing pages and 404 errors.
+
+### Features Added
+
+1. **Custom URL Redirects**
+   - Create redirects for any URL (homepage `/`, `/faq/`, or any path)
+   - Works for existing pages AND 404 errors
+   - New "Custom Redirects" tab in admin interface
+   - Enable/disable individual redirects
+   - Full management UI (add, edit, delete)
+
+2. **Conditional Parameters**
+   - **Login Status**: Different URLs for logged-in users vs. guests
+   - **User Language**: Redirect based on browser language or Moodle preference
+   - **Combined Conditions**: Use both login and language together
+   - Parameters stored as flexible JSON for future expansion
+
+3. **Administrator Bypass**
+   - New setting: "Disable redirect for administrators" (enabled by default)
+   - Admins bypass all custom redirects when signed in
+   - Perfect for testing and troubleshooting
+
+### Technical Implementation
+
+- **Proper Moodle Integration**: Uses `tool_redirectplus_after_config()` callback in lib.php
+- **Works with All PHP Setups**: PHP-FPM, FastCGI, mod_php - no special configuration needed
+- **Early Interception**: Redirects happen before page rendering
+- **Database Schema**: New `tool_redirectplus_redirects` table with JSON options field
+- **Helper Functions**: Complete API for redirect matching and evaluation
+
+### Example Use Cases
+
+- Homepage language redirect: Send Spanish speakers to `/es/`, French to `/fr/`
+- Member area: Redirect logged-out users to login page
+- FAQ for guests: Different FAQ pages for members vs. visitors
+- Legacy URL redirects: Old pages to new locations with conditions
+
+### Database Changes
+
+- New table: `tool_redirectplus_redirects`
+- Fields: source_url, redirect_options (JSON), enabled, timestamps
+- Indexes on source_url and enabled for performance
+
+### Files Added
+
+- `edit_redirect.php` - Add/edit redirect form with JavaScript UI
+- `templates/redirects_tab.mustache` - Redirects management interface
+- Extensive language strings for all new features
+
+### Upgrade Notes
+
+- Database upgrade automatic on plugin update
+- `disable_redirect_admin` config set to 1 (enabled) by default
+- All existing functionality preserved
+- No action required - works immediately after upgrade
+
+### Removed
+
+- Old backup files (`index_backup.php`, `index_old.php`)
+- Development zip files
+- Unused hook callback approach (in favor of simpler after_config callback)
+
 ## [1.3.0] - 2025-10-31
 
 ### Changed - Enhanced Settings Interface

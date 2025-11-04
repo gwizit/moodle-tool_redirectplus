@@ -27,6 +27,7 @@
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/filelib.php');
+require_once(__DIR__ . '/lib.php');
 
 // Log the 404 error first - capture the ORIGINAL requested URL, not this error page.
 // The URL should be passed as a query parameter from the ErrorDocument directive.
@@ -86,12 +87,35 @@ try {
     debugging('tool_redirectplus: Failed to log 404 error - ' . $tool_redirectplus_exception->getMessage(), DEBUG_DEVELOPER);
 }
 
-// Get plugin configuration.
+// First, check for custom URL-specific redirects (unless user is admin and bypass is enabled).
+if (!tool_redirectplus_should_bypass_redirect()) {
+    $tool_redirectplus_custom_redirect = tool_redirectplus_find_redirect($tool_redirectplus_url);
+    
+    if ($tool_redirectplus_custom_redirect) {
+        // Get user context for conditional parameters.
+        $tool_redirectplus_is_logged_in = isloggedin() && !isguestuser();
+        $tool_redirectplus_user_lang = tool_redirectplus_get_user_language();
+        
+        // Evaluate the redirect options to get destination URL.
+        $tool_redirectplus_destination = tool_redirectplus_evaluate_redirect(
+            $tool_redirectplus_custom_redirect,
+            $tool_redirectplus_is_logged_in,
+            $tool_redirectplus_user_lang
+        );
+        
+        if ($tool_redirectplus_destination) {
+            redirect($tool_redirectplus_destination);
+            exit;
+        }
+    }
+}
+
+// Get plugin configuration for global behavior.
 $tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
 $tool_redirectplus_redirect_url = get_config('tool_redirectplus', 'redirect_url');
 $tool_redirectplus_custom_message = get_config('tool_redirectplus', 'custom_message');
 
-// Handle based on behavior setting.
+// Handle based on global behavior setting.
 if ($tool_redirectplus_behavior === 'redirect' && !empty($tool_redirectplus_redirect_url)) {
     redirect($tool_redirectplus_redirect_url);
     exit;

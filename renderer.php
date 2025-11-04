@@ -54,6 +54,16 @@ class tool_redirectplus_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Render the redirects tab
+     *
+     * @param array $data Template data
+     * @return string HTML output
+     */
+    public function render_redirects_tab($data) {
+        return $this->render_from_template('tool_redirectplus/redirects_tab', $data);
+    }
+
+    /**
      * Render the main page with all tabs
      *
      * @param array $data Template data

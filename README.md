@@ -22,6 +22,10 @@ This information is invaluable for:
 ## Features ##
 
 - **Automatic 404 Error Logging**: No configuration needed - works automatically after installation
+- **Custom URL Redirects**: Create conditional redirects for ANY page (existing or 404)
+- **Conditional Parameters**: Redirect based on login status and user language
+- **Redirect Existing Pages**: Redirect homepage, /faq/, or any existing page based on conditions
+- **Administrator Bypass**: Disable redirects for administrators (useful for testing)
 - **Comprehensive Error Report**: View all 404 errors in an easy-to-read table format
 - **User-Friendly Interface**: Access the report from Site administration > Tools > Redirect Plus
 - **Record Management**: Delete individual records or clear all records at once
@@ -141,13 +145,70 @@ Configure how 404 errors are handled:
 
 **Save your settings** when done.
 
+### Custom Redirects Tab ###
+
+Create intelligent redirects with conditional parameters:
+
+**Example Use Cases:**
+
+1. **Homepage Language Redirect:**
+   - Source URL: `/`
+   - Condition: User language
+   - Spanish speakers → `/es/`
+   - French speakers → `/fr/`
+   - Others → `/en/`
+
+2. **FAQ for Guests:**
+   - Source URL: `/faq/`
+   - Condition: Login status
+   - Logged out → `/guest-faq.html`
+   - Logged in → stay on /faq/
+
+3. **Members Area:**
+   - Source URL: `/members/`
+   - Condition: Login status
+   - Logged in → `/dashboard/`
+   - Logged out → `/login/`
+
+4. **Old Page Redirect:**
+   - Source URL: `/old-page`
+   - Simple redirect → `/new-page`
+
+**Redirect Types:**
+- **Simple Redirect**: One URL for everyone
+- **Conditional Redirect**: Different URLs based on:
+  - Login status (logged in vs. logged out)
+  - User language (browser or Moodle preference)
+  - Both conditions combined
+
+**Important Notes:**
+- Works automatically for both existing pages and 404 errors using Moodle's callback system
+- No special PHP configuration required (works with PHP-FPM, FastCGI, mod_php, etc.)
+- Admin bypass option prevents redirects for administrators when enabled
+
+### Settings Tab ###
+
+Configure global 404 error handling and plugin options:
+
+**Choose Behavior:**
+- **Show custom message** (default): Display a custom HTML message on the error page
+- **Redirect to another page**: Automatically redirect users to a different URL
+
+**Disable Redirect for Administrators:**
+- Checkbox option (enabled by default)
+- When enabled, administrators bypass ALL custom redirects when signed in
+- Useful for testing and troubleshooting
+
+**Save your settings** when done.
+
 ### Setup Instructions Tab ###
 
 Complete server configuration guidance:
 - View your custom 404 URL
 - **Test button**: Click to verify 404 tracking is working (opens error page in new tab)
-- **Server-specific instructions**: Expandable sections for Apache, Nginx, and Plesk
+- **Server-specific instructions**: Expandable sections for Apache, Nginx, and .htaccess
 - Copy/paste ready configuration snippets
+- **Note**: Custom redirects work automatically via Moodle's callback system (no special setup needed)
 
 ## How It Works ##
 
