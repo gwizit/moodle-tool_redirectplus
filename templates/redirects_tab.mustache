@@ -38,11 +38,22 @@
                 {{{strings.redirectexamples_desc}}}
             </div>
 
+            {{#show_edit_form}}
+            <div class="mb-4">
+                {{{edit_form_html}}}
+            </div>
+            <hr>
+            {{/show_edit_form}}
+
+            {{^show_edit_form}}
             <div class="mb-3">
-                <a href="{{{add_url}}}" class="btn btn-primary">
+                <a href="{{{add_url}}}" class="btn btn-primary" id="btn-add-redirect">
                     <i class="fa fa-plus"></i> {{strings.addredirect}}
                 </a>
             </div>
+            {{/show_edit_form}}
+
+            <div id="redirect-message-area"></div>
 
             {{#has_redirects}}
             <div class="table-responsive">
@@ -58,3 +69,21 @@
         </div>
     </div>
 </div>
+
+{{#js}}
+require(['jquery'], function($) {
+    // Add click handler to "Add New Redirect" button
+    $('#btn-add-redirect').on('click', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href') + '#redirects';
+        window.location.href = url;
+    });
+    
+    // Add click handler to all edit buttons
+    $(document).on('click', 'a[href*="action=edit"]', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href') + '#redirects';
+        window.location.href = url;
+    });
+});
+{{/js}}

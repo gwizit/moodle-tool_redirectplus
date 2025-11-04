@@ -24,6 +24,9 @@
 
 namespace tool_redirectplus;
 
+// Require lib.php for helper functions.
+require_once(__DIR__ . '/../lib.php');
+
 /**
  * Hook callbacks class for redirect processing.
  *

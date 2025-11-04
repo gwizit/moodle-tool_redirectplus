@@ -1,0 +1,283 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_redirectplus/edit_redirect_form
+
+    Edit/Add redirect form template for Redirect Plus plugin.
+
+    Context variables required for this template:
+    * redirect_id - ID of redirect (0 for new)
+    * source_url - Source URL value
+    * enabled - Whether redirect is enabled
+    * destination_url - Destination URL for simple redirects
+    * is_simple - Boolean for simple redirect type
+    * is_conditional - Boolean for conditional redirect type
+    * use_login_param - Boolean for login parameter
+    * loggedin_url - URL for logged in users
+    * loggedout_url - URL for logged out users
+    * use_language_param - Boolean for language parameter
+    * language_rules - Array of language rules
+    * default_language_url - Default language URL
+    * strings - Language strings
+    * form_action - Form action URL
+    * sesskey - Session key
+    * cancel_url - URL to return to
+}}
+
+<form method="post" action="{{{form_action}}}" class="mform" id="redirect-form">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+    <input type="hidden" name="id" value="{{redirect_id}}">
+    <input type="hidden" name="action" value="saveredirect">
+    
+    <!-- Basic Settings -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <strong>{{strings.sourceurl}}</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label for="id_source_url">{{strings.sourceurl}} *</label>
+                <input type="text" name="source_url" id="id_source_url" value="{{source_url}}" 
+                       class="form-control" placeholder="/old-page" required>
+                <small class="form-text text-muted">{{strings.sourceurl_help}}</small>
+            </div>
+            
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" name="enabled" id="id_enabled" value="1" class="custom-control-input" {{#enabled}}checked{{/enabled}}>
+                    <label for="id_enabled" class="custom-control-label">{{strings.enableredirect}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Redirect Type -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <strong>{{strings.redirectoptions}}</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label for="id_redirect_type">{{strings.redirectoptions}}</label>
+                <select name="redirect_type" id="id_redirect_type" class="form-control">
+                    <option value="simple" {{#is_simple}}selected{{/is_simple}}>{{strings.basicredirect}}</option>
+                    <option value="conditional" {{#is_conditional}}selected{{/is_conditional}}>{{strings.conditionalredirect}}</option>
+                </select>
+            </div>
+            
+            <!-- Simple Redirect -->
+            <div id="simple_redirect_section" style="display: none;">
+                <div class="form-group">
+                    <label for="id_destination_url">{{strings.destinationurl}} *</label>
+                    <input type="url" name="destination_url" id="id_destination_url" 
+                           value="{{destination_url}}" 
+                           class="form-control" placeholder="https://example.com/new-page">
+                    <small class="form-text text-muted">{{strings.destinationurl_help}}</small>
+                </div>
+            </div>
+            
+            <!-- Conditional Redirect -->
+            <div id="conditional_redirect_section" style="display: none;">
+                <p class="text-info">{{strings.parametersnote}}</p>
+                
+                <!-- Login Parameter -->
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" name="use_login_param" id="id_use_login_param" value="1" 
+                               class="custom-control-input" {{#use_login_param}}checked{{/use_login_param}}>
+                        <label for="id_use_login_param" class="custom-control-label font-weight-bold">
+                            {{strings.useloginparam}}
+                        </label>
+                    </div>
+                    <small class="form-text text-muted">{{strings.useloginparam_help}}</small>
+                </div>
+                
+                <div id="login_param_section" style="display: none;">
+                    <div class="form-group ml-4">
+                        <label for="id_loggedin_url">{{strings.loggedin_url}}</label>
+                        <input type="url" name="loggedin_url" id="id_loggedin_url" 
+                               value="{{loggedin_url}}" 
+                               class="form-control" placeholder="https://example.com/member-page">
+                    </div>
+                    
+                    <div class="form-group ml-4">
+                        <label for="id_loggedout_url">{{strings.loggedout_url}}</label>
+                        <input type="url" name="loggedout_url" id="id_loggedout_url" 
+                               value="{{loggedout_url}}" 
+                               class="form-control" placeholder="https://example.com/guest-page">
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Language Parameter -->
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" name="use_language_param" id="id_use_language_param" value="1" 
+                               class="custom-control-input" {{#use_language_param}}checked{{/use_language_param}}>
+                        <label for="id_use_language_param" class="custom-control-label font-weight-bold">
+                            {{strings.uselanguageparam}}
+                        </label>
+                    </div>
+                    <small class="form-text text-muted">{{strings.uselanguageparam_help}}</small>
+                </div>
+                
+                <div id="language_param_section" style="display: none;">
+                    <div id="language_rules_container" class="ml-4">
+                        {{#language_rules}}
+                        <div class="language-rule-row mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;">
+                            <div class="mb-2">
+                                <strong>{{strings.languagerule}} #<span class="rule-number">{{number}}</span></strong>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-4">
+                                    <input type="text" name="language_code[]" value="{{lang}}" 
+                                           class="form-control" placeholder="{{strings.languagecode}}">
+                                    <small class="form-text text-muted">{{strings.languagecode_help}}</small>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="url" name="language_url[]" value="{{url}}" 
+                                           class="form-control" placeholder="{{strings.languageurl}}">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm remove-language-rule" {{#is_first}}style="display: none;"{{/is_first}}>
+                                        {{strings.delete}}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {{/language_rules}}
+                    </div>
+                    
+                    <div class="ml-4 mb-3">
+                        <button type="button" id="add_language_rule" class="btn btn-sm btn-secondary">
+                            <i class="fa fa-plus"></i> {{strings.addlanguagerule}}
+                        </button>
+                    </div>
+                    
+                    <div class="form-group ml-4">
+                        <label for="id_default_language_url">{{strings.defaultlanguageurl}}</label>
+                        <input type="url" name="default_language_url" id="id_default_language_url" 
+                               value="{{default_language_url}}" 
+                               class="form-control" placeholder="https://example.com/default-page">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">{{strings.saveredirect}}</button>
+        <a href="{{{cancel_url}}}#redirects" class="btn btn-secondary" id="btn-cancel-redirect">{{strings.cancel}}</a>
+    </div>
+</form>
+
+{{#js}}
+require(['jquery'], function($) {
+    // Handle cancel button click
+    $('#btn-cancel-redirect').on('click', function(e) {
+        e.preventDefault();
+        window.location.href = '{{{cancel_url}}}#redirects';
+    });
+    
+    // Toggle redirect type sections
+    $('#id_redirect_type').on('change', function() {
+        var simpleSection = $('#simple_redirect_section');
+        var conditionalSection = $('#conditional_redirect_section');
+        
+        if ($(this).val() === 'simple') {
+            simpleSection.show();
+            conditionalSection.hide();
+        } else {
+            simpleSection.hide();
+            conditionalSection.show();
+        }
+    });
+
+    // Toggle login parameter section
+    $('#id_use_login_param').on('change', function() {
+        $('#login_param_section').toggle(this.checked);
+    });
+
+    // Toggle language parameter section
+    $('#id_use_language_param').on('change', function() {
+        $('#language_param_section').toggle(this.checked);
+    });
+
+    // Add language rule
+    $('#add_language_rule').on('click', function() {
+        var container = $('#language_rules_container');
+        var ruleCount = container.find('.language-rule-row').length + 1;
+        var newRow = $('<div class="language-rule-row mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;"></div>');
+        
+        newRow.html(
+            '<div class="mb-2">' +
+                '<strong>{{strings.languagerule}} #<span class="rule-number">' + ruleCount + '</span></strong>' +
+            '</div>' +
+            '<div class="form-row">' +
+                '<div class="col-md-4">' +
+                    '<input type="text" name="language_code[]" class="form-control" placeholder="{{strings.languagecode}}">' +
+                    '<small class="form-text text-muted">{{strings.languagecode_help}}</small>' +
+                '</div>' +
+                '<div class="col-md-7">' +
+                    '<input type="url" name="language_url[]" class="form-control" placeholder="{{strings.languageurl}}">' +
+                '</div>' +
+                '<div class="col-md-1">' +
+                    '<button type="button" class="btn btn-danger btn-sm remove-language-rule">{{strings.delete}}</button>' +
+                '</div>' +
+            '</div>'
+        );
+        
+        container.append(newRow);
+        
+        // Attach remove handler
+        newRow.find('.remove-language-rule').on('click', function() {
+            newRow.remove();
+            updateRuleNumbers();
+        });
+    });
+
+    // Remove language rule
+    $(document).on('click', '.remove-language-rule', function() {
+        $(this).closest('.language-rule-row').remove();
+        updateRuleNumbers();
+    });
+
+    // Function to update rule numbers
+    function updateRuleNumbers() {
+        $('.language-rule-row').each(function(index) {
+            $(this).find('.rule-number').text(index + 1);
+        });
+    }
+
+    // Initialize display on page load
+    $(document).ready(function() {
+        // Trigger redirect type change to show correct section
+        $('#id_redirect_type').trigger('change');
+        
+        // Show sections based on checkbox states
+        if ($('#id_use_login_param').is(':checked')) {
+            $('#login_param_section').show();
+        }
+        
+        if ($('#id_use_language_param').is(':checked')) {
+            $('#language_param_section').show();
+        }
+    });
+});
+{{/js}}

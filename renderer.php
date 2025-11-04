@@ -72,4 +72,14 @@ class tool_redirectplus_renderer extends plugin_renderer_base {
     public function render_main_page($data) {
         return $this->render_from_template('tool_redirectplus/main', $data);
     }
+
+    /**
+     * Render the edit redirect form
+     *
+     * @param array $data Template data
+     * @return string HTML output
+     */
+    public function render_edit_redirect_form($data) {
+        return $this->render_from_template('tool_redirectplus/edit_redirect_form', $data);
+    }
 }

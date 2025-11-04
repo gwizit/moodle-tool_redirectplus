@@ -33,6 +33,8 @@ $tool_redirectplus_perpage = optional_param('perpage', 50, PARAM_INT);
 $tool_redirectplus_delete = optional_param('delete', 0, PARAM_INT);
 $tool_redirectplus_deleteall = optional_param('deleteall', 0, PARAM_BOOL);
 $tool_redirectplus_confirm = optional_param('confirm', 0, PARAM_BOOL);
+$tool_redirectplus_action = optional_param('action', '', PARAM_ALPHA);
+$tool_redirectplus_editid = optional_param('editid', 0, PARAM_INT);
 
 $tool_redirectplus_context = context_system::instance();
 require_capability('moodle/site:config', $tool_redirectplus_context);
@@ -42,6 +44,69 @@ $PAGE->set_url($tool_redirectplus_baseurl, ['page' => $tool_redirectplus_page, '
 $PAGE->set_context($tool_redirectplus_context);
 $PAGE->set_title(get_string('pluginname', 'tool_redirectplus'));
 $PAGE->set_heading(get_string('pluginname', 'tool_redirectplus'));
+
+// Handle save redirect form submission.
+if (data_submitted() && confirm_sesskey() && $tool_redirectplus_action === 'saveredirect') {
+    $source_url = required_param('source_url', PARAM_TEXT);
+    $enabled = optional_param('enabled', 1, PARAM_INT);
+    $redirect_type = optional_param('redirect_type', 'simple', PARAM_ALPHA);
+    $redirect_id = optional_param('id', 0, PARAM_INT);
+    
+    // Build options array.
+    $options = ['type' => $redirect_type];
+    
+    if ($redirect_type === 'simple') {
+        $options['destination_url'] = required_param('destination_url', PARAM_URL);
+    } else {
+        // Conditional redirect.
+        $options['destination_url'] = optional_param('destination_url', '', PARAM_URL);
+        $options['use_login_param'] = optional_param('use_login_param', 0, PARAM_INT);
+        
+        if ($options['use_login_param']) {
+            $options['loggedin_url'] = required_param('loggedin_url', PARAM_URL);
+            $options['loggedout_url'] = required_param('loggedout_url', PARAM_URL);
+        }
+        
+        $options['use_language_param'] = optional_param('use_language_param', 0, PARAM_INT);
+        
+        if ($options['use_language_param']) {
+            $lang_codes = optional_param_array('language_code', [], PARAM_TEXT);
+            $lang_urls = optional_param_array('language_url', [], PARAM_URL);
+            $language_rules = [];
+            
+            for ($i = 0; $i < count($lang_codes); $i++) {
+                if (!empty($lang_codes[$i]) && !empty($lang_urls[$i])) {
+                    $language_rules[] = [
+                        'lang' => strtolower(trim($lang_codes[$i])),
+                        'url' => $lang_urls[$i],
+                    ];
+                }
+            }
+            
+            $options['language_rules'] = $language_rules;
+            $options['default_language_url'] = optional_param('default_language_url', '', PARAM_URL);
+        }
+    }
+    
+    // Save to database.
+    $record = new stdClass();
+    $record->source_url = $source_url;
+    $record->redirect_options = json_encode($options);
+    $record->enabled = $enabled;
+    $record->timemodified = time();
+    
+    if ($redirect_id) {
+        $record->id = $redirect_id;
+        $DB->update_record('tool_redirectplus_redirects', $record);
+    } else {
+        $record->timecreated = time();
+        $DB->insert_record('tool_redirectplus_redirects', $record);
+    }
+    
+    // Redirect back to the redirects tab
+    $redirect_url = new moodle_url($tool_redirectplus_baseurl, [], 'redirects');
+    redirect($redirect_url, get_string('redirectsaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
+}
 
 // Handle settings form submission.
 if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALPHA) === 'settings') {
@@ -241,6 +306,98 @@ $tool_redirectplus_report_data = [
 $tool_redirectplus_report_tab = $tool_redirectplus_renderer->render_report_tab($tool_redirectplus_report_data);
 
 // REDIRECTS TAB - Build data.
+$tool_redirectplus_show_edit_form = ($tool_redirectplus_action === 'add' || $tool_redirectplus_action === 'edit' || $tool_redirectplus_editid > 0);
+$tool_redirectplus_edit_form_html = '';
+
+if ($tool_redirectplus_show_edit_form) {
+    // Prepare edit form data.
+    if ($tool_redirectplus_editid > 0) {
+        $redirect = $DB->get_record('tool_redirectplus_redirects', ['id' => $tool_redirectplus_editid], '*', MUST_EXIST);
+        $redirect->options = json_decode($redirect->redirect_options, true);
+        $pagetitle = get_string('editredirect', 'tool_redirectplus');
+    } else {
+        $redirect = new stdClass();
+        $redirect->id = 0;
+        $redirect->source_url = '';
+        $redirect->enabled = 1;
+        $redirect->options = [
+            'type' => 'simple',
+            'destination_url' => '',
+            'use_login_param' => 0,
+            'use_language_param' => 0,
+            'language_rules' => [],
+        ];
+        $pagetitle = get_string('addredirect', 'tool_redirectplus');
+    }
+    
+    // Prepare language rules for template.
+    $language_rules = $redirect->options['language_rules'] ?? [];
+    if (empty($language_rules)) {
+        $language_rules = [['lang' => '', 'url' => '']];
+    }
+    $language_rules_formatted = [];
+    foreach ($language_rules as $index => $rule) {
+        $language_rules_formatted[] = [
+            'lang' => $rule['lang'] ?? '',
+            'url' => $rule['url'] ?? '',
+            'number' => $index + 1,
+            'is_first' => $index === 0,
+        ];
+    }
+    
+    $edit_form_data = [
+        'redirect_id' => $redirect->id,
+        'source_url' => $redirect->source_url,
+        'enabled' => $redirect->enabled,
+        'destination_url' => $redirect->options['destination_url'] ?? '',
+        'is_simple' => ($redirect->options['type'] ?? 'simple') === 'simple',
+        'is_conditional' => ($redirect->options['type'] ?? 'simple') === 'conditional',
+        'use_login_param' => !empty($redirect->options['use_login_param']),
+        'loggedin_url' => $redirect->options['loggedin_url'] ?? '',
+        'loggedout_url' => $redirect->options['loggedout_url'] ?? '',
+        'use_language_param' => !empty($redirect->options['use_language_param']),
+        'language_rules' => $language_rules_formatted,
+        'default_language_url' => $redirect->options['default_language_url'] ?? '',
+        'form_action' => $tool_redirectplus_baseurl->out(false),
+        'cancel_url' => $tool_redirectplus_baseurl->out(false),
+        'sesskey' => sesskey(),
+        'strings' => [
+            'howredirectswork' => get_string('howredirectswork', 'tool_redirectplus'),
+            'howredirectswork_desc' => get_string('howredirectswork_desc', 'tool_redirectplus'),
+            'worksfor' => get_string('worksfor', 'tool_redirectplus'),
+            'worksfor_desc' => get_string('worksfor_desc', 'tool_redirectplus'),
+            'conditions' => get_string('conditions', 'tool_redirectplus'),
+            'conditions_desc' => get_string('conditions_desc', 'tool_redirectplus'),
+            'sourceurl' => get_string('sourceurl', 'tool_redirectplus'),
+            'sourceurl_help' => get_string('sourceurl_help', 'tool_redirectplus'),
+            'enableredirect' => get_string('enableredirect', 'tool_redirectplus'),
+            'redirectoptions' => get_string('redirectoptions', 'tool_redirectplus'),
+            'basicredirect' => get_string('basicredirect', 'tool_redirectplus'),
+            'conditionalredirect' => get_string('conditionalredirect', 'tool_redirectplus'),
+            'destinationurl' => get_string('destinationurl', 'tool_redirectplus'),
+            'destinationurl_help' => get_string('destinationurl_help', 'tool_redirectplus'),
+            'parametersnote' => get_string('parametersnote', 'tool_redirectplus'),
+            'useloginparam' => get_string('useloginparam', 'tool_redirectplus'),
+            'useloginparam_help' => get_string('useloginparam_help', 'tool_redirectplus'),
+            'loggedin_url' => get_string('loggedin_url', 'tool_redirectplus'),
+            'loggedout_url' => get_string('loggedout_url', 'tool_redirectplus'),
+            'uselanguageparam' => get_string('uselanguageparam', 'tool_redirectplus'),
+            'uselanguageparam_help' => get_string('uselanguageparam_help', 'tool_redirectplus'),
+            'languagerule' => get_string('languagerule', 'tool_redirectplus'),
+            'languagecode' => get_string('languagecode', 'tool_redirectplus'),
+            'languagecode_help' => get_string('languagecode_help', 'tool_redirectplus'),
+            'languageurl' => get_string('languageurl', 'tool_redirectplus'),
+            'delete' => get_string('delete'),
+            'addlanguagerule' => get_string('addlanguagerule', 'tool_redirectplus'),
+            'defaultlanguageurl' => get_string('defaultlanguageurl', 'tool_redirectplus'),
+            'saveredirect' => get_string('saveredirect', 'tool_redirectplus'),
+            'cancel' => get_string('cancel'),
+        ],
+    ];
+    
+    $tool_redirectplus_edit_form_html = $tool_redirectplus_renderer->render_edit_redirect_form($edit_form_data);
+}
+
 $tool_redirectplus_redirects = $DB->get_records('tool_redirectplus_redirects', null, 'timecreated DESC');
 $tool_redirectplus_has_redirects = count($tool_redirectplus_redirects) > 0;
 
@@ -294,8 +451,9 @@ if ($tool_redirectplus_has_redirects) {
         $tool_redirectplus_redirect_row[] = userdate($tool_redirectplus_redirect->timemodified);
         
         // Actions.
-        $tool_redirectplus_edit_url = new moodle_url('/admin/tool/redirectplus/edit_redirect.php', [
-            'id' => $tool_redirectplus_redirect->id,
+        $tool_redirectplus_edit_url = new moodle_url($PAGE->url, [
+            'action' => 'edit',
+            'editid' => $tool_redirectplus_redirect->id,
         ]);
         $tool_redirectplus_delete_url = new moodle_url($PAGE->url, [
             'deleteredirect' => $tool_redirectplus_redirect->id,
@@ -317,10 +475,12 @@ if ($tool_redirectplus_has_redirects) {
     $tool_redirectplus_redirects_table_html = '';
 }
 
-$tool_redirectplus_add_redirect_url = new moodle_url('/admin/tool/redirectplus/edit_redirect.php');
+$tool_redirectplus_add_redirect_url = new moodle_url($PAGE->url, ['action' => 'add']);
 
 $tool_redirectplus_redirects_data = [
     'has_redirects' => $tool_redirectplus_has_redirects,
+    'show_edit_form' => $tool_redirectplus_show_edit_form,
+    'edit_form_html' => $tool_redirectplus_edit_form_html,
     'table_html' => $tool_redirectplus_redirects_table_html,
     'add_url' => $tool_redirectplus_add_redirect_url->out(false),
     'sesskey' => sesskey(),

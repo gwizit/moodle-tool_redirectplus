@@ -178,3 +178,12 @@ $string['redirectexamples_desc'] = '<ul>
 <li><strong>Members area:</strong> Source URL: <code>/members/</code> - Redirect logged-in users to dashboard, logged-out users to login page</li>
 <li><strong>404 redirects:</strong> Source URL: <code>/old-page</code> - Redirect to <code>/new-page</code></li>
 </ul>';
+
+// Edit redirect form strings.
+$string['howredirectswork'] = 'How Redirects Work';
+$string['howredirectswork_desc'] = 'This plugin uses Moodle\'s after_config callback to intercept requests early in the page lifecycle, before any output is sent. This allows redirecting both existing pages and 404 errors based on your conditions.';
+$string['worksfor'] = 'Works For';
+$string['worksfor_desc'] = 'Any page (homepage /, /faq/, etc.) and 404 errors';
+$string['conditions'] = 'Conditions';
+$string['conditions_desc'] = 'Login status (logged in vs guest) and/or user language (browser or Moodle preference)';
+$string['languagerule'] = 'Language Rule';

@@ -42,3 +42,47 @@
     {{{redirects_tab}}}
     {{{settings_tab}}}
 </div>
+
+{{#js}}
+require(['jquery'], function($) {
+    // Function to activate tab based on hash
+    function activateTabFromHash() {
+        var hash = window.location.hash;
+        if (hash) {
+            // Remove the # and find the corresponding tab
+            var tabId = hash.substring(1);
+            var tabLink = $('#' + tabId + '-tab');
+            
+            if (tabLink.length) {
+                // Remove active class from all tabs
+                $('.nav-link').removeClass('active');
+                $('.tab-pane').removeClass('show active');
+                
+                // Activate the target tab
+                tabLink.addClass('active');
+                $('#' + tabId).addClass('show active');
+            }
+        }
+    }
+    
+    // Activate tab on page load
+    $(document).ready(function() {
+        activateTabFromHash();
+    });
+    
+    // Update hash when tab is clicked
+    $('.nav-link[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        var hash = $(e.target).attr('href');
+        if (history.pushState) {
+            history.pushState(null, null, hash);
+        } else {
+            window.location.hash = hash;
+        }
+    });
+    
+    // Handle browser back/forward buttons
+    $(window).on('hashchange', function() {
+        activateTabFromHash();
+    });
+});
+{{/js}}
