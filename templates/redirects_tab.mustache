@@ -30,12 +30,12 @@
 <div class="tab-pane fade" id="redirects">
     <div class="card">
         <div class="card-body">
-            <h4>{{strings.customredirects}}</h4>
-            <p>{{strings.customredirects_desc}}</p>
+            <h4>{{#str}}customredirects, tool_redirectplus{{/str}}</h4>
+            <p>{{#str}}customredirects_desc, tool_redirectplus{{/str}}</p>
             
             <div class="alert alert-info mb-4">
-                <h5><i class="fa fa-lightbulb-o"></i> {{strings.redirectexamples}}</h5>
-                {{{strings.redirectexamples_desc}}}
+                <h5><i class="fa fa-lightbulb-o"></i> {{#str}}redirectexamples, tool_redirectplus{{/str}}</h5>
+                {{{#str}}redirectexamples_desc, tool_redirectplus{{/str}}}
             </div>
 
             {{#show_edit_form}}
@@ -48,7 +48,7 @@
             {{^show_edit_form}}
             <div class="mb-3">
                 <a href="{{{add_url}}}" class="btn btn-primary" id="btn-add-redirect">
-                    <i class="fa fa-plus"></i> {{strings.addredirect}}
+                    <i class="fa fa-plus"></i> {{#str}}addredirect, tool_redirectplus{{/str}}
                 </a>
             </div>
             {{/show_edit_form}}
@@ -63,7 +63,7 @@
 
             {{^has_redirects}}
             <div class="alert alert-info">
-                {{strings.noredirects}}
+                {{#str}}noredirects, tool_redirectplus{{/str}}
             </div>
             {{/has_redirects}}
         </div>
@@ -71,19 +71,7 @@
 </div>
 
 {{#js}}
-require(['jquery'], function($) {
-    // Add click handler to "Add New Redirect" button
-    $('#btn-add-redirect').on('click', function(e) {
-        e.preventDefault();
-        var url = $(this).attr('href') + '#redirects';
-        window.location.href = url;
-    });
-    
-    // Add click handler to all edit buttons
-    $(document).on('click', 'a[href*="action=edit"]', function(e) {
-        e.preventDefault();
-        var url = $(this).attr('href') + '#redirects';
-        window.location.href = url;
-    });
+require(['tool_redirectplus/redirects_tab'], function(RedirectsTab) {
+    RedirectsTab.init();
 });
 {{/js}}

@@ -46,20 +46,20 @@
     <!-- Basic Settings -->
     <div class="card mb-3">
         <div class="card-header bg-primary text-white">
-            <strong>{{strings.sourceurl}}</strong>
+            <strong>{{#str}}sourceurl, tool_redirectplus{{/str}}</strong>
         </div>
         <div class="card-body">
             <div class="form-group">
-                <label for="id_source_url">{{strings.sourceurl}} *</label>
+                <label for="id_source_url">{{#str}}sourceurl, tool_redirectplus{{/str}} *</label>
                 <input type="text" name="source_url" id="id_source_url" value="{{source_url}}" 
                        class="form-control" placeholder="/old-page" required>
-                <small class="form-text text-muted">{{strings.sourceurl_help}}</small>
+                <small class="form-text text-muted">{{#str}}sourceurl_help, tool_redirectplus{{/str}}</small>
             </div>
             
             <div class="form-group">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" name="enabled" id="id_enabled" value="1" class="custom-control-input" {{#enabled}}checked{{/enabled}}>
-                    <label for="id_enabled" class="custom-control-label">{{strings.enableredirect}}</label>
+                    <label for="id_enabled" class="custom-control-label">{{#str}}enableredirect, tool_redirectplus{{/str}}</label>
                 </div>
             </div>
         </div>
@@ -68,31 +68,31 @@
     <!-- Redirect Type -->
     <div class="card mb-3">
         <div class="card-header bg-info text-white">
-            <strong>{{strings.redirectoptions}}</strong>
+            <strong>{{#str}}redirectoptions, tool_redirectplus{{/str}}</strong>
         </div>
         <div class="card-body">
             <div class="form-group">
-                <label for="id_redirect_type">{{strings.redirectoptions}}</label>
+                <label for="id_redirect_type">{{#str}}redirectoptions, tool_redirectplus{{/str}}</label>
                 <select name="redirect_type" id="id_redirect_type" class="form-control">
-                    <option value="simple" {{#is_simple}}selected{{/is_simple}}>{{strings.basicredirect}}</option>
-                    <option value="conditional" {{#is_conditional}}selected{{/is_conditional}}>{{strings.conditionalredirect}}</option>
+                    <option value="simple" {{#is_simple}}selected{{/is_simple}}>{{#str}}basicredirect, tool_redirectplus{{/str}}</option>
+                    <option value="conditional" {{#is_conditional}}selected{{/is_conditional}}>{{#str}}conditionalredirect, tool_redirectplus{{/str}}</option>
                 </select>
             </div>
             
             <!-- Simple Redirect -->
             <div id="simple_redirect_section" style="display: none;">
                 <div class="form-group">
-                    <label for="id_destination_url">{{strings.destinationurl}} *</label>
+                    <label for="id_destination_url">{{#str}}destinationurl, tool_redirectplus{{/str}} *</label>
                     <input type="url" name="destination_url" id="id_destination_url" 
                            value="{{destination_url}}" 
                            class="form-control" placeholder="https://example.com/new-page">
-                    <small class="form-text text-muted">{{strings.destinationurl_help}}</small>
+                    <small class="form-text text-muted">{{#str}}destinationurl_help, tool_redirectplus{{/str}}</small>
                 </div>
             </div>
             
             <!-- Conditional Redirect -->
             <div id="conditional_redirect_section" style="display: none;">
-                <p class="text-info">{{strings.parametersnote}}</p>
+                <p class="text-info">{{#str}}parametersnote, tool_redirectplus{{/str}}</p>
                 
                 <!-- Login Parameter -->
                 <div class="form-group">
@@ -100,22 +100,22 @@
                         <input type="checkbox" name="use_login_param" id="id_use_login_param" value="1" 
                                class="custom-control-input" {{#use_login_param}}checked{{/use_login_param}}>
                         <label for="id_use_login_param" class="custom-control-label font-weight-bold">
-                            {{strings.useloginparam}}
+                            {{#str}}useloginparam, tool_redirectplus{{/str}}
                         </label>
                     </div>
-                    <small class="form-text text-muted">{{strings.useloginparam_help}}</small>
+                    <small class="form-text text-muted">{{#str}}useloginparam_help, tool_redirectplus{{/str}}</small>
                 </div>
                 
                 <div id="login_param_section" style="display: none;">
                     <div class="form-group ml-4">
-                        <label for="id_loggedin_url">{{strings.loggedin_url}}</label>
+                        <label for="id_loggedin_url">{{#str}}loggedin_url, tool_redirectplus{{/str}}</label>
                         <input type="url" name="loggedin_url" id="id_loggedin_url" 
                                value="{{loggedin_url}}" 
                                class="form-control" placeholder="https://example.com/member-page">
                     </div>
                     
                     <div class="form-group ml-4">
-                        <label for="id_loggedout_url">{{strings.loggedout_url}}</label>
+                        <label for="id_loggedout_url">{{#str}}loggedout_url, tool_redirectplus{{/str}}</label>
                         <input type="url" name="loggedout_url" id="id_loggedout_url" 
                                value="{{loggedout_url}}" 
                                class="form-control" placeholder="https://example.com/guest-page">
@@ -130,20 +130,20 @@
                         <input type="checkbox" name="use_language_param" id="id_use_language_param" value="1" 
                                class="custom-control-input" {{#use_language_param}}checked{{/use_language_param}}>
                         <label for="id_use_language_param" class="custom-control-label font-weight-bold">
-                            {{strings.uselanguageparam}}
+                            {{#str}}uselanguageparam, tool_redirectplus{{/str}}
                         </label>
                     </div>
-                    <small class="form-text text-muted">{{strings.uselanguageparam_help}}</small>
+                    <small class="form-text text-muted">{{#str}}uselanguageparam_help, tool_redirectplus{{/str}}</small>
                 </div>
                 
                 <div id="language_param_section" style="display: none;">
                     <div class="alert alert-info ml-4 mb-3">
-                        <strong><i class="fa fa-info-circle"></i> {{{strings.language_priority_title}}}</strong>
-                        <p class="mb-1">{{{strings.language_priority_desc}}}</p>
+                        <strong><i class="fa fa-info-circle"></i> {{{#str}}language_priority_title, tool_redirectplus{{/str}}}</strong>
+                        <p class="mb-1">{{{#str}}language_priority_desc, tool_redirectplus{{/str}}}</p>
                         <ul class="mb-0">
-                            <li>{{{strings.language_wildcard_exact}}}</li>
-                            <li>{{{strings.language_wildcard_partial}}}</li>
-                            <li>{{{strings.language_wildcard_all}}}</li>
+                            <li>{{{#str}}language_wildcard_exact, tool_redirectplus{{/str}}}</li>
+                            <li>{{{#str}}language_wildcard_partial, tool_redirectplus{{/str}}}</li>
+                            <li>{{{#str}}language_wildcard_all, tool_redirectplus{{/str}}}</li>
                         </ul>
                     </div>
                     
@@ -151,12 +151,12 @@
                         {{#language_rules}}
                         <div class="language-rule-row mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;">
                             <div class="mb-2 d-flex justify-content-between align-items-center">
-                                <strong>{{strings.languagerule}} #<span class="rule-number">{{number}}</span></strong>
+                                <strong>{{#str}}languagerule, tool_redirectplus{{/str}} #<span class="rule-number">{{number}}</span></strong>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button type="button" class="btn btn-outline-secondary move-rule-up" title="{{strings.moveup}}">
+                                    <button type="button" class="btn btn-outline-secondary move-rule-up" title="{{#str}}moveup, tool_redirectplus{{/str}}">
                                         <i class="fa fa-arrow-up"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary move-rule-down" title="{{strings.movedown}}">
+                                    <button type="button" class="btn btn-outline-secondary move-rule-down" title="{{#str}}movedown, tool_redirectplus{{/str}}">
                                         <i class="fa fa-arrow-down"></i>
                                     </button>
                                 </div>
@@ -164,14 +164,14 @@
                             <div class="form-row">
                                 <div class="col-md-6">
                                     <input type="text" name="language_code[]" value="{{lang}}" 
-                                           class="form-control" placeholder="{{strings.languagecode}}">
-                                    <small class="form-text text-muted">{{strings.languagecode_help}}</small>
+                                           class="form-control" placeholder="{{#str}}languagecode, tool_redirectplus{{/str}}">
+                                    <small class="form-text text-muted">{{#str}}languagecode_help, tool_redirectplus{{/str}}</small>
                                 </div>
                                 <div class="col-md-6">
                                     <input type="url" name="language_url[]" value="{{url}}" 
-                                           class="form-control" placeholder="{{strings.languageurl}}">
+                                           class="form-control" placeholder="{{#str}}languageurl, tool_redirectplus{{/str}}">
                                     <button type="button" class="btn btn-danger btn-sm remove-language-rule mt-2" {{#is_first}}style="display: none;"{{/is_first}}>
-                                        {{strings.delete}}
+                                        {{#str}}delete, tool_redirectplus{{/str}}
                                     </button>
                                 </div>
                             </div>
@@ -181,16 +181,16 @@
                     
                     <div class="ml-4 mb-3">
                         <button type="button" id="add_language_rule" class="btn btn-sm btn-secondary">
-                            <i class="fa fa-plus"></i> {{strings.addlanguagerule}}
+                            <i class="fa fa-plus"></i> {{#str}}addlanguagerule, tool_redirectplus{{/str}}
                         </button>
                     </div>
                     
                     <div class="form-group ml-4">
-                        <label for="id_default_language_url" class="font-weight-bold">{{strings.defaultlanguageurl}}</label>
+                        <label for="id_default_language_url" class="font-weight-bold">{{#str}}defaultlanguageurl, tool_redirectplus{{/str}}</label>
                         <input type="url" name="default_language_url" id="id_default_language_url" 
                                value="{{default_language_url}}" 
                                class="form-control" placeholder="https://example.com/default-page">
-                        <small class="form-text text-muted">{{strings.defaultlanguageurl_help}}</small>
+                        <small class="form-text text-muted">{{#str}}defaultlanguageurl_help, tool_redirectplus{{/str}}</small>
                     </div>
                 </div>
             </div>
@@ -199,131 +199,25 @@
     
     <!-- Actions -->
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">{{strings.saveredirect}}</button>
-        <a href="{{{cancel_url}}}#redirects" class="btn btn-secondary" id="btn-cancel-redirect">{{strings.cancel}}</a>
+        <button type="submit" class="btn btn-primary">{{#str}}saveredirect, tool_redirectplus{{/str}}</button>
+        <a href="{{{cancel_url}}}#redirects" class="btn btn-secondary" id="btn-cancel-redirect">{{#str}}cancel, tool_redirectplus{{/str}}</a>
     </div>
 </form>
 
 {{#js}}
-require(['jquery'], function($) {
-    // Handle cancel button click
-    $('#btn-cancel-redirect').on('click', function(e) {
-        e.preventDefault();
-        window.location.href = '{{{cancel_url}}}#redirects';
-    });
-    
-    // Toggle redirect type sections
-    $('#id_redirect_type').on('change', function() {
-        var simpleSection = $('#simple_redirect_section');
-        var conditionalSection = $('#conditional_redirect_section');
-        
-        if ($(this).val() === 'simple') {
-            simpleSection.show();
-            conditionalSection.hide();
-        } else {
-            simpleSection.hide();
-            conditionalSection.show();
-        }
-    });
-
-    // Toggle login parameter section
-    $('#id_use_login_param').on('change', function() {
-        $('#login_param_section').toggle(this.checked);
-    });
-
-    // Toggle language parameter section
-    $('#id_use_language_param').on('change', function() {
-        $('#language_param_section').toggle(this.checked);
-    });
-
-    // Add language rule
-    $('#add_language_rule').on('click', function() {
-        var container = $('#language_rules_container');
-        var ruleCount = container.find('.language-rule-row').length + 1;
-        var newRow = $('<div class="language-rule-row mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;"></div>');
-        
-        newRow.html(
-            '<div class="mb-2 d-flex justify-content-between align-items-center">' +
-                '<strong>{{strings.languagerule}} #<span class="rule-number">' + ruleCount + '</span></strong>' +
-                '<div class="btn-group btn-group-sm" role="group">' +
-                    '<button type="button" class="btn btn-outline-secondary move-rule-up" title="{{strings.moveup}}">' +
-                        '<i class="fa fa-arrow-up"></i>' +
-                    '</button>' +
-                    '<button type="button" class="btn btn-outline-secondary move-rule-down" title="{{strings.movedown}}">' +
-                        '<i class="fa fa-arrow-down"></i>' +
-                    '</button>' +
-                '</div>' +
-            '</div>' +
-            '<div class="form-row">' +
-                '<div class="col-md-6">' +
-                    '<input type="text" name="language_code[]" class="form-control" placeholder="{{strings.languagecode}}">' +
-                    '<small class="form-text text-muted">{{strings.languagecode_help}}</small>' +
-                '</div>' +
-                '<div class="col-md-6">' +
-                    '<input type="url" name="language_url[]" class="form-control" placeholder="{{strings.languageurl}}">' +
-                    '<button type="button" class="btn btn-danger btn-sm remove-language-rule mt-2">{{strings.delete}}</button>' +
-                '</div>' +
-            '</div>'
-        );
-        
-        container.append(newRow);
-        attachRuleHandlers(newRow);
-    });
-
-    // Remove language rule
-    $(document).on('click', '.remove-language-rule', function() {
-        $(this).closest('.language-rule-row').remove();
-        updateRuleNumbers();
-    });
-
-    // Move rule up
-    $(document).on('click', '.move-rule-up', function() {
-        var row = $(this).closest('.language-rule-row');
-        var prev = row.prev('.language-rule-row');
-        if (prev.length) {
-            row.insertBefore(prev);
-            updateRuleNumbers();
-        }
-    });
-
-    // Move rule down
-    $(document).on('click', '.move-rule-down', function() {
-        var row = $(this).closest('.language-rule-row');
-        var next = row.next('.language-rule-row');
-        if (next.length) {
-            row.insertAfter(next);
-            updateRuleNumbers();
-        }
-    });
-
-    // Function to attach handlers to new rows
-    function attachRuleHandlers(row) {
-        row.find('.remove-language-rule').on('click', function() {
-            row.remove();
-            updateRuleNumbers();
-        });
-    }
-
-    // Function to update rule numbers
-    function updateRuleNumbers() {
-        $('.language-rule-row').each(function(index) {
-            $(this).find('.rule-number').text(index + 1);
-        });
-    }
-
-    // Initialize display on page load
-    $(document).ready(function() {
-        // Trigger redirect type change to show correct section
-        $('#id_redirect_type').trigger('change');
-        
-        // Show sections based on checkbox states
-        if ($('#id_use_login_param').is(':checked')) {
-            $('#login_param_section').show();
-        }
-        
-        if ($('#id_use_language_param').is(':checked')) {
-            $('#language_param_section').show();
+require(['tool_redirectplus/edit_redirect_form'], function(EditRedirectForm) {
+    EditRedirectForm.init({
+        cancel_url: '{{{cancel_url}}}',
+        strings: {
+            languagerule: '{{js_strings.languagerule}}',
+            moveup: '{{js_strings.moveup}}',
+            movedown: '{{js_strings.movedown}}',
+            languagecode: '{{js_strings.languagecode}}',
+            languagecode_help: '{{js_strings.languagecode_help}}',
+            languageurl: '{{js_strings.languageurl}}',
+            delete: '{{js_strings.delete}}'
         }
     });
 });
 {{/js}}
+

@@ -31,104 +31,108 @@ require_once(__DIR__ . '/lib.php');
 
 // Log the 404 error first - capture the ORIGINAL requested URL, not this error page.
 // The URL should be passed as a query parameter from the ErrorDocument directive.
-$tool_redirectplus_url = optional_param('url', '', PARAM_RAW);
+$url = optional_param('url', '', PARAM_RAW);
 
 // If not in query string, try server variables.
-if (empty($tool_redirectplus_url)) {
+if (empty($url)) {
     // Try various server variables that might contain the original URL.
     if (!empty($_SERVER['REDIRECT_URL'])) {
-        $tool_redirectplus_url = $_SERVER['REDIRECT_URL'];
+        $url = $_SERVER['REDIRECT_URL'];
     } else if (!empty($_SERVER['REDIRECT_REQUEST_URI'])) {
-        $tool_redirectplus_url = $_SERVER['REDIRECT_REQUEST_URI'];
+        $url = $_SERVER['REDIRECT_REQUEST_URI'];
     } else if (!empty($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'error404.php') === false) {
-        $tool_redirectplus_url = $_SERVER['REQUEST_URI'];
+        $url = $_SERVER['REQUEST_URI'];
     } else if (!empty($_SERVER['REDIRECT_SCRIPT_URL'])) {
-        $tool_redirectplus_url = $_SERVER['REDIRECT_SCRIPT_URL'];
+        $url = $_SERVER['REDIRECT_SCRIPT_URL'];
     } else if (!empty($_SERVER['REDIRECT_QUERY_STRING'])) {
         // Parse from query string that Apache might pass.
-        parse_str($_SERVER['REDIRECT_QUERY_STRING'], $tool_redirectplus_query);
-        if (isset($tool_redirectplus_query['url'])) {
-            $tool_redirectplus_url = $tool_redirectplus_query['url'];
+        parse_str($_SERVER['REDIRECT_QUERY_STRING'], $query);
+        if (isset($query['url'])) {
+            $url = $query['url'];
         }
     }
 }
 
 // Clean up the URL - remove query parameters from this error page itself.
-if (!empty($tool_redirectplus_url) && strpos($tool_redirectplus_url, '?') !== false) {
-    $tool_redirectplus_parts = explode('?', $tool_redirectplus_url);
+if (!empty($url) && strpos($url, '?') !== false) {
+    $parts = explode('?', $url);
     // Only use the part before ? if it's not the error page.
-    if (strpos($tool_redirectplus_parts[0], 'error404.php') === false) {
-        $tool_redirectplus_url = $tool_redirectplus_parts[0];
+    if (strpos($parts[0], 'error404.php') === false) {
+        $url = $parts[0];
     }
 }
 
 // Last resort - mark as unknown but include debugging info.
-if (empty($tool_redirectplus_url) || strpos($tool_redirectplus_url, 'error404.php') !== false) {
-    $tool_redirectplus_url = 'Unknown URL - Check configuration';
+if (empty($url) || strpos($url, 'error404.php') !== false) {
+    $url = 'Unknown URL - Check configuration';
 }
 
-$tool_redirectplus_referrer = $_SERVER['HTTP_REFERER'] ?? '';
-$tool_redirectplus_useragent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-$tool_redirectplus_ip = getremoteaddr();
-$tool_redirectplus_userid = $USER->id ?? 0;
+$referrer = $_SERVER['HTTP_REFERER'] ?? '';
+$useragent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+$ip = getremoteaddr();
+$userid = $USER->id ?? 0;
 
 // Check if 404 logging is enabled.
-$tool_redirectplus_enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
-if ($tool_redirectplus_enable_404_logging === false) {
-    $tool_redirectplus_enable_404_logging = 1; // Default to enabled if not set.
+$enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
+if ($enable_404_logging === false) {
+    $enable_404_logging = 1; // Default to enabled if not set.
 }
 
-if ($tool_redirectplus_enable_404_logging) {
+if ($enable_404_logging) {
     try {
-        $tool_redirectplus_record = new stdClass();
-        $tool_redirectplus_record->url = $tool_redirectplus_url;
-        $tool_redirectplus_record->referrer = $tool_redirectplus_referrer;
-        $tool_redirectplus_record->userid = $tool_redirectplus_userid;
-        $tool_redirectplus_record->timecreated = time();
-        $tool_redirectplus_record->ip = $tool_redirectplus_ip;
-        $tool_redirectplus_record->useragent = $tool_redirectplus_useragent;
+        $record = new stdClass();
+        $record->url = $url;
+        $record->referrer = $referrer;
+        $record->userid = $userid;
+        $record->timecreated = time();
+        $record->ip = $ip;
+        $record->useragent = $useragent;
 
-        $DB->insert_record('tool_redirectplus_404', $tool_redirectplus_record);
+        $DB->insert_record('tool_redirectplus_404', $record);
         
         // Prune old records to maintain the maximum limit.
         tool_redirectplus_prune_404_records();
-    } catch (Exception $tool_redirectplus_exception) {
+        
+        // Invalidate 404 report cache since we added a new record.
+        $cache = cache::make('tool_redirectplus', 'report404');
+        $cache->purge();
+    } catch (Exception $exception) {
         // Silently fail - don't break the error page.
-        debugging('tool_redirectplus: Failed to log 404 error - ' . $tool_redirectplus_exception->getMessage(), DEBUG_DEVELOPER);
+        debugging('tool_redirectplus: Failed to log 404 error - ' . $exception->getMessage(), DEBUG_DEVELOPER);
     }
 }
 
 // First, check for custom URL-specific redirects (unless user is admin and bypass is enabled).
 if (!tool_redirectplus_should_bypass_redirect()) {
-    $tool_redirectplus_custom_redirect = tool_redirectplus_find_redirect($tool_redirectplus_url);
+    $custom_redirect = tool_redirectplus_find_redirect($url);
     
-    if ($tool_redirectplus_custom_redirect) {
+    if ($custom_redirect) {
         // Get user context for conditional parameters.
-        $tool_redirectplus_is_logged_in = isloggedin() && !isguestuser();
-        $tool_redirectplus_user_lang = tool_redirectplus_get_user_language();
+        $is_logged_in = isloggedin() && !isguestuser();
+        $user_lang = tool_redirectplus_get_user_language();
         
         // Evaluate the redirect options to get destination URL.
-        $tool_redirectplus_destination = tool_redirectplus_evaluate_redirect(
-            $tool_redirectplus_custom_redirect,
-            $tool_redirectplus_is_logged_in,
-            $tool_redirectplus_user_lang
+        $destination = tool_redirectplus_evaluate_redirect(
+            $custom_redirect,
+            $is_logged_in,
+            $user_lang
         );
         
-        if ($tool_redirectplus_destination) {
-            redirect($tool_redirectplus_destination);
+        if ($destination) {
+            redirect($destination);
             exit;
         }
     }
 }
 
 // Get plugin configuration for global behavior.
-$tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
-$tool_redirectplus_redirect_url = get_config('tool_redirectplus', 'redirect_url');
-$tool_redirectplus_custom_message = get_config('tool_redirectplus', 'custom_message');
+$behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
+$redirect_url_config = get_config('tool_redirectplus', 'redirect_url');
+$custom_message = get_config('tool_redirectplus', 'custom_message');
 
 // Handle based on global behavior setting.
-if ($tool_redirectplus_behavior === 'redirect' && !empty($tool_redirectplus_redirect_url)) {
-    redirect($tool_redirectplus_redirect_url);
+if ($behavior === 'redirect' && !empty($redirect_url_config)) {
+    redirect($redirect_url_config);
     exit;
 }
 
@@ -142,14 +146,14 @@ $PAGE->set_pagelayout('standard');
 echo $OUTPUT->header();
 
 // Display custom message if set, otherwise default message.
-if (!empty($tool_redirectplus_custom_message)) {
-    echo format_text($tool_redirectplus_custom_message, FORMAT_HTML);
+if (!empty($custom_message)) {
+    echo format_text($custom_message, FORMAT_HTML);
 } else {
     // Default 404 message.
     echo html_writer::tag('div', 
         html_writer::tag('h2', get_string('error404heading', 'tool_redirectplus'), ['class' => 'text-danger']) .
         html_writer::tag('p', get_string('error404default', 'tool_redirectplus')) .
-        html_writer::tag('p', get_string('error404url', 'tool_redirectplus', s($tool_redirectplus_url))) .
+        html_writer::tag('p', get_string('error404url', 'tool_redirectplus', s($url))) .
         html_writer::tag('p', 
             html_writer::link($CFG->wwwroot, get_string('backtohome', 'tool_redirectplus'), ['class' => 'btn btn-primary'])
         ),

@@ -36,34 +36,34 @@
     <div class="card mb-4">
         <div class="card-header bg-info text-white">
             <button type="button" id="toggleSetupInstructions" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
-                <i class="fa fa-chevron-down" id="setupIcon"></i> <strong>{{strings.viewsetupinstructions}}</strong>
+                <i class="fa fa-chevron-down" id="setupIcon"></i> <strong>{{#str}}viewsetupinstructions, tool_redirectplus{{/str}}</strong>
             </button>
         </div>
         <div id="setupInstructionsContent" class="collapse">
             <div class="card-body">
-                <h4>{{strings.setupinstructions}}</h4>
+                <h4>{{#str}}setupinstructions, tool_redirectplus{{/str}}</h4>
 
                 <!-- 404 URL Display -->
                 <div class="alert alert-danger">
-                    <h5 class="text-danger"><strong>{{strings.your404url}}</strong></h5>
+                    <h5 class="text-danger"><strong>{{#str}}your404url, tool_redirectplus{{/str}}</strong></h5>
                     <code class="p-2 bg-white d-inline-block" style="font-size: 1.1em;">{{error404_url}}</code>
                 </div>
 
-                <h5>{{strings.serverconfiguration}}</h5>
-                <p class="text-muted">{{strings.config_recommendation}}</p>
+                <h5>{{#str}}serverconfiguration, tool_redirectplus{{/str}}</h5>
+                <p class="text-muted">{{#str}}config_recommendation, tool_redirectplus{{/str}}</p>
 
                 <!-- Apache Instructions -->
                 <div class="card mb-3">
                     <div class="card-header bg-success text-white">
                         <a href="#" id="apacheToggle" class="text-decoration-none text-white font-weight-bold">
-                            <strong>{{strings.apache_method}}</strong> ({{strings.recommended}}) ▼
+                            <strong>{{#str}}apache_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▼
                         </a>
                     </div>
                     <div id="collapseApache" class="collapse show">
                         <div class="card-body">
-                            <p>{{strings.apache_instructions}}</p>
+                            <p>{{#str}}apache_instructions, tool_redirectplus{{/str}}</p>
                             <pre><code>ErrorDocument 404 {{error404_url}}?url=%{REQUEST_URI}</code></pre>
-                            <p class="text-muted mt-2"><small>{{strings.apache_note}}</small></p>
+                            <p class="text-muted mt-2"><small>{{#str}}apache_note, tool_redirectplus{{/str}}</small></p>
                         </div>
                     </div>
                 </div>
@@ -72,14 +72,14 @@
                 <div class="card mb-3">
                     <div class="card-header bg-success text-white">
                         <a href="#" id="nginxToggle" class="text-decoration-none text-white font-weight-bold">
-                            <strong>{{strings.nginx_method}}</strong> ({{strings.recommended}}) ▶
+                            <strong>{{#str}}nginx_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
                     <div id="collapseNginx" class="collapse">
                         <div class="card-body">
-                            <p>{{strings.nginx_instructions}}</p>
+                            <p>{{#str}}nginx_instructions, tool_redirectplus{{/str}}</p>
                             <pre><code>error_page 404 {{error404_url}}?url=$request_uri;</code></pre>
-                            <p class="text-muted mt-2"><small>{{strings.nginx_note}}</small></p>
+                            <p class="text-muted mt-2"><small>{{#str}}nginx_note, tool_redirectplus{{/str}}</small></p>
                         </div>
                     </div>
                 </div>
@@ -88,28 +88,28 @@
                 <div class="card mb-3">
                     <div class="card-header bg-warning">
                         <a href="#" id="htaccessToggle" class="text-decoration-none text-dark font-weight-bold">
-                            <strong>{{strings.htaccess_method}}</strong> ({{strings.fallback_only}}) ▶
+                            <strong>{{#str}}htaccess_method, tool_redirectplus{{/str}}</strong> ({{#str}}fallback_only, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
                     <div id="collapseHtaccess" class="collapse">
                         <div class="card-body">
                             <div class="alert alert-danger">
-                                <strong>{{strings.htaccess_warning_title}}</strong>
-                                <p>{{{strings.htaccess_warning}}}</p>
+                                <strong>{{#str}}htaccess_warning_title, tool_redirectplus{{/str}}</strong>
+                                <p>{{{#str}}htaccess_warning, tool_redirectplus{{/str}}}</p>
                             </div>
                             
                             <div class="alert alert-info">
-                                <strong><i class="fa fa-info-circle"></i> {{strings.htaccess_backup_title}}</strong>
-                                <p>{{strings.htaccess_backup_warning}}</p>
+                                <strong><i class="fa fa-info-circle"></i> {{#str}}htaccess_backup_title, tool_redirectplus{{/str}}</strong>
+                                <p>{{#str}}htaccess_backup_warning, tool_redirectplus{{/str}}</p>
                             </div>
                             
-                            <h6>{{strings.htaccess_manual_instructions_title}}</h6>
-                            <p>{{strings.htaccess_manual_step1}}</p>
-                            <p>{{strings.htaccess_manual_step2}}</p>
+                            <h6>{{#str}}htaccess_manual_instructions_title, tool_redirectplus{{/str}}</h6>
+                            <p>{{#str}}htaccess_manual_step1, tool_redirectplus{{/str}}</p>
+                            <p>{{#str}}htaccess_manual_step2, tool_redirectplus{{/str}}</p>
                             
                             <pre class="bg-light p-3"><code>php_value auto_prepend_file "{{wwwroot}}/admin/tool/redirectplus/prepend.php"</code></pre>
                             
-                            <p class="text-muted mt-2"><small>{{strings.htaccess_manual_note}}</small></p>
+                            <p class="text-muted mt-2"><small>{{#str}}htaccess_manual_note, tool_redirectplus{{/str}}</small></p>
                         </div>
                     </div>
                 </div>
@@ -117,20 +117,20 @@
                 <!-- Test Section -->
                 <div class="card mb-3 mt-4">
                     <div class="card-header bg-primary text-white">
-                        <strong>{{strings.test_configuration}}</strong>
+                        <strong>{{#str}}test_configuration, tool_redirectplus{{/str}}</strong>
                     </div>
                     <div class="card-body">
                         <h5>Automated Browser Test</h5>
                         <p>Click the button below to open a test page in a new window. The test will verify that the 404 error was logged to the database:</p>
                         <button type="button" id="btn-test-404" class="btn btn-primary btn-lg">
-                            <i class="fa fa-flask"></i> {{strings.test_404_tracking}}
+                            <i class="fa fa-flask"></i> {{#str}}test_404_tracking, tool_redirectplus{{/str}}
                         </button>
                         <div id="test-result-container" class="mt-3"></div>
                         
                         <hr class="my-4">
                         
                         <div class="alert alert-info">
-                            <strong><i class="fa fa-info-circle"></i> {{strings.manual_test}}</strong>
+                            <strong><i class="fa fa-info-circle"></i> {{#str}}manual_test, tool_redirectplus{{/str}}</strong>
                             <p class="mb-2">You can also manually test by clicking this link (opens in new tab):</p>
                             <p class="mb-2">
                                 <a href="#" id="manual-test-link" class="btn btn-outline-primary" target="_blank">
@@ -154,7 +154,7 @@
         <div class="card mb-3">
             <div class="card-header bg-info text-white">
                 <button type="button" id="error404Toggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
-                    <i class="fa fa-chevron-down" id="error404Icon"></i> <strong>{{strings.error404_configuration}}</strong>
+                    <i class="fa fa-chevron-down" id="error404Icon"></i> <strong>{{#str}}error404_configuration, tool_redirectplus{{/str}}</strong>
                 </button>
             </div>
             <div id="collapseError404Config" class="collapse show">
@@ -162,57 +162,57 @@
                     <div class="form-group">
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" name="enable_404_logging" id="id_enable_404_logging" value="1" class="custom-control-input" {{#enable_404_logging}}checked{{/enable_404_logging}}>
-                            <label for="id_enable_404_logging" class="custom-control-label font-weight-bold">{{strings.enable_404_logging}}</label>
+                            <label for="id_enable_404_logging" class="custom-control-label font-weight-bold">{{#str}}enable_404_logging, tool_redirectplus{{/str}}</label>
                         </div>
-                        <div class="form-text">{{strings.enable_404_logging_help}}</div>
+                        <div class="form-text">{{#str}}enable_404_logging_help, tool_redirectplus{{/str}}</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="id_max_404_records" class="font-weight-bold">{{strings.max_404_records}}</label>
+                        <label for="id_max_404_records" class="font-weight-bold">{{#str}}max_404_records, tool_redirectplus{{/str}}</label>
                         <input type="number" name="max_404_records" id="id_max_404_records" value="{{max_404_records}}" class="form-control" min="100" max="100000" step="100">
-                        <div class="form-text">{{strings.max_404_records_help}}</div>
+                        <div class="form-text">{{#str}}max_404_records_help, tool_redirectplus{{/str}}</div>
                     </div>
 
                     <hr class="my-4">
 
-                    <h5>{{strings.error404behavior}}</h5>
+                    <h5>{{#str}}error404behavior, tool_redirectplus{{/str}}</h5>
                     <div class="form-group mb-4">
-                        <label for="id_behavior" class="font-weight-bold">{{strings.behavior}}</label>
+                        <label for="id_behavior" class="font-weight-bold">{{#str}}behavior, tool_redirectplus{{/str}}</label>
                         <select id="id_behavior" name="behavior" class="form-control">
-                            <option value="message" {{#behavior_message}}selected{{/behavior_message}}>{{strings.behaviormessage}}</option>
-                            <option value="redirect" {{#behavior_redirect}}selected{{/behavior_redirect}}>{{strings.behaviorredirect}}</option>
+                            <option value="message" {{#behavior_message}}selected{{/behavior_message}}>{{#str}}behaviormessage, tool_redirectplus{{/str}}</option>
+                            <option value="redirect" {{#behavior_redirect}}selected{{/behavior_redirect}}>{{#str}}behaviorredirect, tool_redirectplus{{/str}}</option>
                         </select>
-                        <div class="form-text">{{strings.behavior_desc}}</div>
+                        <div class="form-text">{{#str}}behavior_desc, tool_redirectplus{{/str}}</div>
                     </div>
 
                     <div class="form-group mb-4" id="message_section" style="display: {{#behavior_message}}block{{/behavior_message}}{{^behavior_message}}none{{/behavior_message}};">
-                        <label for="id_custom_message" class="font-weight-bold">{{strings.custommessage}}</label>
+                        <label for="id_custom_message" class="font-weight-bold">{{#str}}custommessage, tool_redirectplus{{/str}}</label>
                         <div id="fitem_id_custom_message" class="form-group">
                             <textarea id="id_custom_message" name="custom_message" rows="20" style="min-height: 400px; width: 100%;" class="form-control">{{{custom_message}}}</textarea>
                         </div>
                         <input type="hidden" name="custom_message_format" value="1">
-                        <div class="form-text mt-2">{{strings.custommessage_help}}</div>
+                        <div class="form-text mt-2">{{#str}}custommessage_help, tool_redirectplus{{/str}}</div>
                     </div>
 
                     <div class="form-group mb-3" id="redirect_section" style="display: {{#behavior_redirect}}block{{/behavior_redirect}}{{^behavior_redirect}}none{{/behavior_redirect}};">
-                        <label for="id_redirect_url" class="font-weight-bold">{{strings.redirecturl}}</label>
+                        <label for="id_redirect_url" class="font-weight-bold">{{#str}}redirecturl, tool_redirectplus{{/str}}</label>
                         <input type="text" name="redirect_url" id="id_redirect_url" value="{{redirect_url}}" class="form-control" placeholder="https://example.com/404-page">
-                        <div class="form-text">{{strings.redirecturl_help}}</div>
+                        <div class="form-text">{{#str}}redirecturl_help, tool_redirectplus{{/str}}</div>
                     </div>
                     
                     <div class="form-group mb-3">
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" name="disable_redirect_admin" id="id_disable_redirect_admin" value="1" class="custom-control-input" {{#disable_redirect_admin}}checked{{/disable_redirect_admin}}>
-                            <label for="id_disable_redirect_admin" class="custom-control-label font-weight-bold">{{strings.disableredirectadmin}}</label>
+                            <label for="id_disable_redirect_admin" class="custom-control-label font-weight-bold">{{#str}}disableredirectadmin, tool_redirectplus{{/str}}</label>
                         </div>
-                        <div class="form-text">{{strings.disableredirectadmin_help}}</div>
+                        <div class="form-text">{{#str}}disableredirectadmin_help, tool_redirectplus{{/str}}</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="form-group mt-4">
-            <input type="submit" value="{{strings.savesettings}}" class="btn btn-primary">
+            <input type="submit" value="{{#str}}savesettings, tool_redirectplus{{/str}}" class="btn btn-primary">
         </div>
     </form>
 </div>
@@ -222,17 +222,17 @@ require(['tool_redirectplus/settings', 'jquery'], function(Settings, $) {
     Settings.init({
         wwwroot: '{{wwwroot}}',
         error404url: '{{error404_url}}',
-        apacheText: '{{strings.apache_method}}',
-        nginxText: '{{strings.nginx_method}}',
-        htaccessText: '{{strings.htaccess_method}}',
+        apacheText: '{{js_strings.apache_method}}',
+        nginxText: '{{js_strings.nginx_method}}',
+        htaccessText: '{{js_strings.htaccess_method}}',
         strings: {
-            viewsetupinstructions: '{{strings.viewsetupinstructions}}',
-            hidesetupinstructions: '{{strings.hidesetupinstructions}}',
-            testing: '{{strings.testing}}',
-            test_success: '{{strings.test_success}}',
-            test_failure: '{{strings.test_failure}}',
-            test_error: '{{strings.test_error}}',
-            error404_configuration: '{{strings.error404_configuration}}'
+            viewsetupinstructions: '{{js_strings.viewsetupinstructions}}',
+            hidesetupinstructions: '{{js_strings.hidesetupinstructions}}',
+            testing: '{{js_strings.testing}}',
+            test_success: '{{js_strings.test_success}}',
+            test_failure: '{{js_strings.test_failure}}',
+            test_error: '{{js_strings.test_error}}',
+            error404_configuration: '{{js_strings.error404_configuration}}'
         }
     });
     
@@ -246,3 +246,4 @@ require(['tool_redirectplus/settings', 'jquery'], function(Settings, $) {
     });
 });
 {{/js}}
+

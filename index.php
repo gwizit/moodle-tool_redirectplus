@@ -28,25 +28,25 @@ require_once($CFG->libdir . '/tablelib.php');
 
 admin_externalpage_setup('tool_redirectplus_manage');
 
-$tool_redirectplus_page = optional_param('page', 0, PARAM_INT);
-$tool_redirectplus_perpage = optional_param('perpage', 50, PARAM_INT);
-$tool_redirectplus_delete = optional_param('delete', 0, PARAM_INT);
-$tool_redirectplus_deleteall = optional_param('deleteall', 0, PARAM_BOOL);
-$tool_redirectplus_confirm = optional_param('confirm', 0, PARAM_BOOL);
-$tool_redirectplus_action = optional_param('action', '', PARAM_ALPHA);
-$tool_redirectplus_editid = optional_param('editid', 0, PARAM_INT);
+$page = optional_param('page', 0, PARAM_INT);
+$perpage = optional_param('perpage', 50, PARAM_INT);
+$delete = optional_param('delete', 0, PARAM_INT);
+$deleteall = optional_param('deleteall', 0, PARAM_BOOL);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
+$action = optional_param('action', '', PARAM_ALPHA);
+$editid = optional_param('editid', 0, PARAM_INT);
 
-$tool_redirectplus_context = context_system::instance();
-require_capability('moodle/site:config', $tool_redirectplus_context);
+$context = context_system::instance();
+require_capability('moodle/site:config', $context);
 
-$tool_redirectplus_baseurl = new moodle_url('/admin/tool/redirectplus/index.php');
-$PAGE->set_url($tool_redirectplus_baseurl, ['page' => $tool_redirectplus_page, 'perpage' => $tool_redirectplus_perpage]);
-$PAGE->set_context($tool_redirectplus_context);
+$baseurl = new moodle_url('/admin/tool/redirectplus/index.php');
+$PAGE->set_url($baseurl, ['page' => $page, 'perpage' => $perpage]);
+$PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'tool_redirectplus'));
 $PAGE->set_heading(get_string('pluginname', 'tool_redirectplus'));
 
 // Handle save redirect form submission.
-if (data_submitted() && confirm_sesskey() && $tool_redirectplus_action === 'saveredirect') {
+if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
     $source_url = required_param('source_url', PARAM_TEXT);
     $enabled = optional_param('enabled', 1, PARAM_INT);
     $redirect_type = optional_param('redirect_type', 'simple', PARAM_ALPHA);
@@ -103,66 +103,75 @@ if (data_submitted() && confirm_sesskey() && $tool_redirectplus_action === 'save
         $DB->insert_record('tool_redirectplus_redirects', $record);
     }
     
+    // Invalidate redirects list cache.
+    $cache = cache::make('tool_redirectplus', 'redirectslist');
+    $cache->purge();
+    
     // Redirect back to the redirects tab
-    $redirect_url = new moodle_url($tool_redirectplus_baseurl, [], 'redirects');
+    $redirect_url = new moodle_url($baseurl, [], 'redirects');
     redirect($redirect_url, get_string('redirectsaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Handle settings form submission (includes both 404 config and behavior settings).
 if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALPHA) === 'settings') {
     // 404 logging settings.
-    $tool_redirectplus_enable_404_logging = optional_param('enable_404_logging', 0, PARAM_INT);
-    $tool_redirectplus_max_404_records = optional_param('max_404_records', 1000, PARAM_INT);
+    $enable_404_logging = optional_param('enable_404_logging', 0, PARAM_INT);
+    $max_404_records = optional_param('max_404_records', 1000, PARAM_INT);
     
-    set_config('enable_404_logging', $tool_redirectplus_enable_404_logging, 'tool_redirectplus');
-    set_config('max_404_records', $tool_redirectplus_max_404_records, 'tool_redirectplus');
+    set_config('enable_404_logging', $enable_404_logging, 'tool_redirectplus');
+    set_config('max_404_records', $max_404_records, 'tool_redirectplus');
     
     // Prune 404 records if the new limit is lower than current count.
     tool_redirectplus_prune_404_records();
     
     // 404 behavior settings.
-    $tool_redirectplus_behavior = optional_param('behavior', 'message', PARAM_ALPHA);
-    $tool_redirectplus_redirect_url = optional_param('redirect_url', '', PARAM_TEXT);
-    $tool_redirectplus_custom_message = optional_param('custom_message', '', PARAM_RAW);
-    $tool_redirectplus_custom_message_format = optional_param('custom_message_format', FORMAT_HTML, PARAM_INT);
-    $tool_redirectplus_disable_redirect_admin = optional_param('disable_redirect_admin', 0, PARAM_INT);
+    $behavior = optional_param('behavior', 'message', PARAM_ALPHA);
+    $redirect_url = optional_param('redirect_url', '', PARAM_TEXT);
+    $custom_message = optional_param('custom_message', '', PARAM_RAW);
+    $custom_message_format = optional_param('custom_message_format', FORMAT_HTML, PARAM_INT);
+    $disable_redirect_admin = optional_param('disable_redirect_admin', 0, PARAM_INT);
 
-    set_config('behavior', $tool_redirectplus_behavior, 'tool_redirectplus');
-    set_config('disable_redirect_admin', $tool_redirectplus_disable_redirect_admin, 'tool_redirectplus');
+    set_config('behavior', $behavior, 'tool_redirectplus');
+    set_config('disable_redirect_admin', $disable_redirect_admin, 'tool_redirectplus');
 
-    if ($tool_redirectplus_behavior === 'redirect') {
-        if (!empty($tool_redirectplus_redirect_url) && filter_var($tool_redirectplus_redirect_url, FILTER_VALIDATE_URL)) {
-            set_config('redirect_url', $tool_redirectplus_redirect_url, 'tool_redirectplus');
-        } else if (!empty($tool_redirectplus_redirect_url)) {
-            $tool_redirectplus_error_url = new moodle_url($PAGE->url, [], 'settings');
-            redirect($tool_redirectplus_error_url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
+    if ($behavior === 'redirect') {
+        if (!empty($redirect_url) && filter_var($redirect_url, FILTER_VALIDATE_URL)) {
+            set_config('redirect_url', $redirect_url, 'tool_redirectplus');
+        } else if (!empty($redirect_url)) {
+            $error_url = new moodle_url($PAGE->url, [], 'settings');
+            redirect($error_url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
-        set_config('custom_message', $tool_redirectplus_custom_message, 'tool_redirectplus');
-        set_config('custom_message_format', $tool_redirectplus_custom_message_format, 'tool_redirectplus');
+        set_config('custom_message', $custom_message, 'tool_redirectplus');
+        set_config('custom_message_format', $custom_message_format, 'tool_redirectplus');
     }
 
     // Redirect back to settings tab.
-    $tool_redirectplus_settings_url = new moodle_url($PAGE->url, [], 'settings');
-    redirect($tool_redirectplus_settings_url, get_string('settingssaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
+    $settings_url = new moodle_url($PAGE->url, [], 'settings');
+    redirect($settings_url, get_string('settingssaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Handle delete redirect.
-$tool_redirectplus_deleteredirect = optional_param('deleteredirect', 0, PARAM_INT);
-if ($tool_redirectplus_deleteredirect && confirm_sesskey()) {
-    if ($tool_redirectplus_confirm) {
-        $DB->delete_records('tool_redirectplus_redirects', ['id' => $tool_redirectplus_deleteredirect]);
+$deleteredirect = optional_param('deleteredirect', 0, PARAM_INT);
+if ($deleteredirect && confirm_sesskey()) {
+    if ($confirm) {
+        $DB->delete_records('tool_redirectplus_redirects', ['id' => $deleteredirect]);
+        
+        // Invalidate redirects list cache.
+        $cache = cache::make('tool_redirectplus', 'redirectslist');
+        $cache->purge();
+        
         redirect($PAGE->url, get_string('redirectdeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        $tool_redirectplus_confirmurl = new moodle_url($PAGE->url, [
-            'deleteredirect' => $tool_redirectplus_deleteredirect,
+        $confirmurl = new moodle_url($PAGE->url, [
+            'deleteredirect' => $deleteredirect,
             'confirm' => 1,
             'sesskey' => sesskey(),
         ]);
         echo $OUTPUT->header();
         echo $OUTPUT->confirm(
             get_string('deleteredirectconfirm', 'tool_redirectplus'),
-            $tool_redirectplus_confirmurl,
+            $confirmurl,
             $PAGE->url
         );
         echo $OUTPUT->footer();
@@ -171,20 +180,25 @@ if ($tool_redirectplus_deleteredirect && confirm_sesskey()) {
 }
 
 // Handle delete single 404 record.
-if ($tool_redirectplus_delete && confirm_sesskey()) {
-    if ($tool_redirectplus_confirm) {
-        $DB->delete_records('tool_redirectplus_404', ['id' => $tool_redirectplus_delete]);
+if ($delete && confirm_sesskey()) {
+    if ($confirm) {
+        $DB->delete_records('tool_redirectplus_404', ['id' => $delete]);
+        
+        // Invalidate 404 report cache.
+        $cache = cache::make('tool_redirectplus', 'report404');
+        $cache->purge();
+        
         redirect($PAGE->url, get_string('recorddeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        $tool_redirectplus_confirmurl = new moodle_url($PAGE->url, [
-            'delete' => $tool_redirectplus_delete,
+        $confirmurl = new moodle_url($PAGE->url, [
+            'delete' => $delete,
             'confirm' => 1,
             'sesskey' => sesskey(),
         ]);
         echo $OUTPUT->header();
         echo $OUTPUT->confirm(
             get_string('deleterecordconfirm', 'tool_redirectplus'),
-            $tool_redirectplus_confirmurl,
+            $confirmurl,
             $PAGE->url
         );
         echo $OUTPUT->footer();
@@ -193,12 +207,17 @@ if ($tool_redirectplus_delete && confirm_sesskey()) {
 }
 
 // Handle delete all records.
-if ($tool_redirectplus_deleteall && confirm_sesskey()) {
-    if ($tool_redirectplus_confirm) {
+if ($deleteall && confirm_sesskey()) {
+    if ($confirm) {
         $DB->delete_records('tool_redirectplus_404');
+        
+        // Invalidate 404 report cache.
+        $cache = cache::make('tool_redirectplus', 'report404');
+        $cache->purge();
+        
         redirect($PAGE->url, get_string('allrecordsdeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        $tool_redirectplus_confirmurl = new moodle_url($PAGE->url, [
+        $confirmurl = new moodle_url($PAGE->url, [
             'deleteall' => 1,
             'confirm' => 1,
             'sesskey' => sesskey(),
@@ -206,7 +225,7 @@ if ($tool_redirectplus_deleteall && confirm_sesskey()) {
         echo $OUTPUT->header();
         echo $OUTPUT->confirm(
             get_string('deleteallrecordsconfirm', 'tool_redirectplus'),
-            $tool_redirectplus_confirmurl,
+            $confirmurl,
             $PAGE->url
         );
         echo $OUTPUT->footer();
@@ -215,409 +234,178 @@ if ($tool_redirectplus_deleteall && confirm_sesskey()) {
 }
 
 // Get renderer.
-$tool_redirectplus_renderer = $PAGE->get_renderer('tool_redirectplus');
+$renderer = $PAGE->get_renderer('tool_redirectplus');
 
-// REPORT TAB - Build data.
-$tool_redirectplus_totalcount = $DB->count_records('tool_redirectplus_404');
-$tool_redirectplus_has_errors = $tool_redirectplus_totalcount > 0;
-
-if ($tool_redirectplus_has_errors) {
-    $tool_redirectplus_table = new html_table();
-    $tool_redirectplus_table->head = [
-        get_string('url', 'tool_redirectplus'),
-        get_string('referrer', 'tool_redirectplus'),
-        get_string('user'),
-        get_string('ipaddress', 'tool_redirectplus'),
-        get_string('useragent', 'tool_redirectplus'),
-        get_string('timecreated', 'tool_redirectplus'),
-        get_string('actions'),
-    ];
-    $tool_redirectplus_table->attributes['class'] = 'admintable generaltable';
-    $tool_redirectplus_table->id = 'tool_redirectplus_report';
-
-    $tool_redirectplus_records = $DB->get_records('tool_redirectplus_404', null, 'timecreated DESC',
-        '*', $tool_redirectplus_page * $tool_redirectplus_perpage, $tool_redirectplus_perpage);
-
-    foreach ($tool_redirectplus_records as $tool_redirectplus_record) {
-        $tool_redirectplus_row = [];
-
-        $tool_redirectplus_row[] = html_writer::link(
-            $CFG->wwwroot . $tool_redirectplus_record->url,
-            s($tool_redirectplus_record->url),
-            ['target' => '_blank']
-        );
-
-        $tool_redirectplus_referrer = $tool_redirectplus_record->referrer ?: '-';
-        if ($tool_redirectplus_referrer !== '-') {
-            $tool_redirectplus_row[] = html_writer::link(
-                $tool_redirectplus_referrer,
-                s($tool_redirectplus_referrer),
-                ['target' => '_blank']
-            );
-        } else {
-            $tool_redirectplus_row[] = '-';
-        }
-
-        if ($tool_redirectplus_record->userid > 0) {
-            $tool_redirectplus_user = $DB->get_record('user', ['id' => $tool_redirectplus_record->userid]);
-            if ($tool_redirectplus_user) {
-                $tool_redirectplus_row[] = fullname($tool_redirectplus_user);
-            } else {
-                $tool_redirectplus_row[] = get_string('deleteduser', 'tool_redirectplus');
-            }
-        } else {
-            $tool_redirectplus_row[] = get_string('guest');
-        }
-
-        $tool_redirectplus_row[] = s($tool_redirectplus_record->ip);
-
-        $tool_redirectplus_useragent = $tool_redirectplus_record->useragent ?: '-';
-        if (strlen($tool_redirectplus_useragent) > 60) {
-            $tool_redirectplus_useragent = substr($tool_redirectplus_useragent, 0, 60) . '...';
-        }
-        $tool_redirectplus_row[] = html_writer::tag('span', s($tool_redirectplus_useragent), [
-            'title' => s($tool_redirectplus_record->useragent),
-        ]);
-
-        $tool_redirectplus_row[] = userdate($tool_redirectplus_record->timecreated);
-
-        $tool_redirectplus_deleteurl = new moodle_url($PAGE->url, [
-            'delete' => $tool_redirectplus_record->id,
-            'sesskey' => sesskey(),
-        ]);
-        $tool_redirectplus_row[] = html_writer::link($tool_redirectplus_deleteurl, get_string('delete'), [
-            'class' => 'btn btn-sm btn-danger',
-        ]);
-
-        $tool_redirectplus_table->data[] = $tool_redirectplus_row;
-    }
-
-    $tool_redirectplus_table_html = html_writer::table($tool_redirectplus_table);
-    $tool_redirectplus_paging_html = $OUTPUT->paging_bar($tool_redirectplus_totalcount, $tool_redirectplus_page, $tool_redirectplus_perpage, $PAGE->url);
-} else {
-    $tool_redirectplus_table_html = '';
-    $tool_redirectplus_paging_html = '';
-}
-
-$tool_redirectplus_deleteall_url = new moodle_url($PAGE->url, [
-    'deleteall' => 1,
-    'sesskey' => sesskey(),
-]);
-
-$tool_redirectplus_report_data = [
-    'has_errors' => $tool_redirectplus_has_errors,
-    'strings' => [
-        'report404' => get_string('report404', 'tool_redirectplus'),
-        'report404desc' => get_string('report404desc', 'tool_redirectplus'),
-        'deleteallrecords' => get_string('deleteallrecords', 'tool_redirectplus'),
-        'no404errors' => get_string('no404errors', 'tool_redirectplus'),
-    ],
-    'table_html' => $tool_redirectplus_table_html,
-    'paging_html' => $tool_redirectplus_paging_html,
-    'deleteall_url' => $tool_redirectplus_deleteall_url->out(false),
-];
-
-$tool_redirectplus_report_tab = $tool_redirectplus_renderer->render_report_tab($tool_redirectplus_report_data);
+// REPORT TAB - Render using output class (handles all data processing).
+$report_tab = $renderer->render_report_tab(
+    $page,
+    $perpage,
+    $PAGE->url
+);
 
 // REDIRECTS TAB - Build data.
-$tool_redirectplus_show_edit_form = ($tool_redirectplus_action === 'add' || $tool_redirectplus_action === 'edit' || $tool_redirectplus_editid > 0);
-$tool_redirectplus_edit_form_html = '';
+$show_edit_form = ($action === 'add' || $action === 'edit' || $editid > 0);
+$edit_form_html = '';
 
-if ($tool_redirectplus_show_edit_form) {
-    // Prepare edit form data.
-    if ($tool_redirectplus_editid > 0) {
-        $redirect = $DB->get_record('tool_redirectplus_redirects', ['id' => $tool_redirectplus_editid], '*', MUST_EXIST);
-        $redirect->options = json_decode($redirect->redirect_options, true);
-        $pagetitle = get_string('editredirect', 'tool_redirectplus');
-    } else {
-        $redirect = new stdClass();
-        $redirect->id = 0;
-        $redirect->source_url = '';
-        $redirect->enabled = 1;
-        $redirect->options = [
-            'type' => 'simple',
-            'destination_url' => '',
-            'use_login_param' => 0,
-            'use_language_param' => 0,
-            'language_rules' => [],
-        ];
-        $pagetitle = get_string('addredirect', 'tool_redirectplus');
-    }
-    
-    // Prepare language rules for template.
-    $language_rules = $redirect->options['language_rules'] ?? [];
-    if (empty($language_rules)) {
-        $language_rules = [['lang' => '', 'url' => '']];
-    }
-    $language_rules_formatted = [];
-    foreach ($language_rules as $index => $rule) {
-        $language_rules_formatted[] = [
-            'lang' => $rule['lang'] ?? '',
-            'url' => $rule['url'] ?? '',
-            'number' => $index + 1,
-            'is_first' => $index === 0,
-        ];
-    }
-    
-    $edit_form_data = [
-        'redirect_id' => $redirect->id,
-        'source_url' => $redirect->source_url,
-        'enabled' => $redirect->enabled,
-        'destination_url' => $redirect->options['destination_url'] ?? '',
-        'is_simple' => ($redirect->options['type'] ?? 'simple') === 'simple',
-        'is_conditional' => ($redirect->options['type'] ?? 'simple') === 'conditional',
-        'use_login_param' => !empty($redirect->options['use_login_param']),
-        'loggedin_url' => $redirect->options['loggedin_url'] ?? '',
-        'loggedout_url' => $redirect->options['loggedout_url'] ?? '',
-        'use_language_param' => !empty($redirect->options['use_language_param']),
-        'language_rules' => $language_rules_formatted,
-        'default_language_url' => $redirect->options['default_language_url'] ?? '',
-        'form_action' => $tool_redirectplus_baseurl->out(false),
-        'cancel_url' => $tool_redirectplus_baseurl->out(false),
-        'sesskey' => sesskey(),
-        'strings' => [
-            'howredirectswork' => get_string('howredirectswork', 'tool_redirectplus'),
-            'howredirectswork_desc' => get_string('howredirectswork_desc', 'tool_redirectplus'),
-            'worksfor' => get_string('worksfor', 'tool_redirectplus'),
-            'worksfor_desc' => get_string('worksfor_desc', 'tool_redirectplus'),
-            'conditions' => get_string('conditions', 'tool_redirectplus'),
-            'conditions_desc' => get_string('conditions_desc', 'tool_redirectplus'),
-            'sourceurl' => get_string('sourceurl', 'tool_redirectplus'),
-            'sourceurl_help' => get_string('sourceurl_help', 'tool_redirectplus'),
-            'enableredirect' => get_string('enableredirect', 'tool_redirectplus'),
-            'redirectoptions' => get_string('redirectoptions', 'tool_redirectplus'),
-            'basicredirect' => get_string('basicredirect', 'tool_redirectplus'),
-            'conditionalredirect' => get_string('conditionalredirect', 'tool_redirectplus'),
-            'destinationurl' => get_string('destinationurl', 'tool_redirectplus'),
-            'destinationurl_help' => get_string('destinationurl_help', 'tool_redirectplus'),
-            'parametersnote' => get_string('parametersnote', 'tool_redirectplus'),
-            'useloginparam' => get_string('useloginparam', 'tool_redirectplus'),
-            'useloginparam_help' => get_string('useloginparam_help', 'tool_redirectplus'),
-            'loggedin_url' => get_string('loggedin_url', 'tool_redirectplus'),
-            'loggedout_url' => get_string('loggedout_url', 'tool_redirectplus'),
-            'uselanguageparam' => get_string('uselanguageparam', 'tool_redirectplus'),
-            'uselanguageparam_help' => get_string('uselanguageparam_help', 'tool_redirectplus'),
-            'languagerule' => get_string('languagerule', 'tool_redirectplus'),
-            'languagecode' => get_string('languagecode', 'tool_redirectplus'),
-            'languagecode_help' => get_string('languagecode_help', 'tool_redirectplus'),
-            'languageurl' => get_string('languageurl', 'tool_redirectplus'),
-            'delete' => get_string('delete'),
-            'addlanguagerule' => get_string('addlanguagerule', 'tool_redirectplus'),
-            'defaultlanguageurl' => get_string('defaultlanguageurl', 'tool_redirectplus'),
-            'defaultlanguageurl_help' => get_string('defaultlanguageurl_help', 'tool_redirectplus'),
-            'language_priority_title' => get_string('language_priority_title', 'tool_redirectplus'),
-            'language_priority_desc' => get_string('language_priority_desc', 'tool_redirectplus'),
-            'language_wildcard_exact' => get_string('language_wildcard_exact', 'tool_redirectplus'),
-            'language_wildcard_partial' => get_string('language_wildcard_partial', 'tool_redirectplus'),
-            'language_wildcard_all' => get_string('language_wildcard_all', 'tool_redirectplus'),
-            'moveup' => get_string('moveup', 'tool_redirectplus'),
-            'movedown' => get_string('movedown', 'tool_redirectplus'),
-            'saveredirect' => get_string('saveredirect', 'tool_redirectplus'),
-            'cancel' => get_string('cancel'),
-        ],
-    ];
-    
-    $tool_redirectplus_edit_form_html = $tool_redirectplus_renderer->render_edit_redirect_form($edit_form_data);
+if ($show_edit_form) {
+    // Render edit form - the output class handles all data processing.
+    $redirect_id = $editid > 0 ? $editid : null;
+    $edit_form_html = $renderer->render_edit_redirect_form($redirect_id, $baseurl);
 }
 
-$tool_redirectplus_redirects = $DB->get_records('tool_redirectplus_redirects', null, 'timecreated DESC');
-$tool_redirectplus_has_redirects = count($tool_redirectplus_redirects) > 0;
+// Initialize cache for redirects list.
+$redirects_cache = cache::make('tool_redirectplus', 'redirectslist');
+$cache_key = 'redirects_table_html';
 
-if ($tool_redirectplus_has_redirects) {
-    $tool_redirectplus_redirects_table = new html_table();
-    $tool_redirectplus_redirects_table->head = [
+// Try to get cached redirects data.
+$cached_data = $redirects_cache->get($cache_key);
+
+if ($cached_data === false) {
+    // Cache miss - build the redirects list from database.
+    $redirects = $DB->get_records('tool_redirectplus_redirects', null, 'timecreated DESC');
+    $has_redirects = count($redirects) > 0;
+
+    if ($has_redirects) {
+        $redirects_table = new html_table();
+    $redirects_table->head = [
         get_string('sourceurl', 'tool_redirectplus'),
         get_string('redirectoptions', 'tool_redirectplus'),
         get_string('status', 'tool_redirectplus'),
         get_string('lastmodified', 'tool_redirectplus'),
         get_string('actions'),
     ];
-    $tool_redirectplus_redirects_table->attributes['class'] = 'admintable generaltable';
-    $tool_redirectplus_redirects_table->id = 'tool_redirectplus_redirects';
+    $redirects_table->attributes['class'] = 'admintable generaltable';
+    $redirects_table->id = 'tool_redirectplus_redirects';
 
-    foreach ($tool_redirectplus_redirects as $tool_redirectplus_redirect) {
-        $tool_redirectplus_redirect_row = [];
+    foreach ($redirects as $redirect) {
+        $redirect_row = [];
         
         // Source URL.
-        $tool_redirectplus_redirect_row[] = html_writer::tag('code', s($tool_redirectplus_redirect->source_url));
+        $redirect_row[] = html_writer::tag('code', s($redirect->source_url));
         
         // Redirect options summary.
-        $tool_redirectplus_redirect_opts = json_decode($tool_redirectplus_redirect->redirect_options, true);
-        $tool_redirectplus_opts_summary = '';
+        $redirect_opts = json_decode($redirect->redirect_options, true);
+        $opts_summary = '';
         
-        if (isset($tool_redirectplus_redirect_opts['type']) && $tool_redirectplus_redirect_opts['type'] === 'simple') {
-            $tool_redirectplus_opts_summary = get_string('basicredirect', 'tool_redirectplus') . '<br>' .
-                html_writer::tag('small', s($tool_redirectplus_redirect_opts['destination_url'] ?? ''));
+        if (isset($redirect_opts['type']) && $redirect_opts['type'] === 'simple') {
+            $opts_summary = get_string('basicredirect', 'tool_redirectplus') . '<br>' .
+                html_writer::tag('small', s($redirect_opts['destination_url'] ?? ''));
         } else {
-            $tool_redirectplus_opts_summary = get_string('conditionalredirect', 'tool_redirectplus');
-            if (!empty($tool_redirectplus_redirect_opts['use_login_param'])) {
-                $tool_redirectplus_opts_summary .= '<br><small>✓ ' . get_string('useloginparam', 'tool_redirectplus') . '</small>';
+            $opts_summary = get_string('conditionalredirect', 'tool_redirectplus');
+            if (!empty($redirect_opts['use_login_param'])) {
+                $opts_summary .= '<br><small>✓ ' . get_string('useloginparam', 'tool_redirectplus') . '</small>';
             }
-            if (!empty($tool_redirectplus_redirect_opts['use_language_param'])) {
-                $tool_redirectplus_opts_summary .= '<br><small>✓ ' . get_string('uselanguageparam', 'tool_redirectplus') . '</small>';
+            if (!empty($redirect_opts['use_language_param'])) {
+                $opts_summary .= '<br><small>✓ ' . get_string('uselanguageparam', 'tool_redirectplus') . '</small>';
             }
         }
         
-        $tool_redirectplus_redirect_row[] = $tool_redirectplus_opts_summary;
+        $redirect_row[] = $opts_summary;
         
         // Status.
-        if ($tool_redirectplus_redirect->enabled) {
-            $tool_redirectplus_redirect_row[] = html_writer::tag('span', get_string('enabled', 'tool_redirectplus'), 
+        if ($redirect->enabled) {
+            $redirect_row[] = html_writer::tag('span', get_string('enabled', 'tool_redirectplus'), 
                 ['class' => 'badge badge-success']);
         } else {
-            $tool_redirectplus_redirect_row[] = html_writer::tag('span', get_string('disabled', 'tool_redirectplus'), 
+            $redirect_row[] = html_writer::tag('span', get_string('disabled', 'tool_redirectplus'), 
                 ['class' => 'badge badge-secondary']);
         }
         
         // Last modified.
-        $tool_redirectplus_redirect_row[] = userdate($tool_redirectplus_redirect->timemodified);
+        $redirect_row[] = userdate($redirect->timemodified);
         
         // Actions.
-        $tool_redirectplus_edit_url = new moodle_url($PAGE->url, [
+        $edit_url = new moodle_url($PAGE->url, [
             'action' => 'edit',
-            'editid' => $tool_redirectplus_redirect->id,
+            'editid' => $redirect->id,
         ]);
-        $tool_redirectplus_delete_url = new moodle_url($PAGE->url, [
-            'deleteredirect' => $tool_redirectplus_redirect->id,
+        $delete_url = new moodle_url($PAGE->url, [
+            'deleteredirect' => $redirect->id,
             'sesskey' => sesskey(),
         ]);
         
-        $tool_redirectplus_actions = html_writer::link($tool_redirectplus_edit_url, get_string('edit'), 
+        $actions = html_writer::link($edit_url, get_string('edit'), 
             ['class' => 'btn btn-sm btn-secondary']) . ' ' .
-            html_writer::link($tool_redirectplus_delete_url, get_string('delete'), 
+            html_writer::link($delete_url, get_string('delete'), 
             ['class' => 'btn btn-sm btn-danger']);
         
-        $tool_redirectplus_redirect_row[] = $tool_redirectplus_actions;
+        $redirect_row[] = $actions;
         
-        $tool_redirectplus_redirects_table->data[] = $tool_redirectplus_redirect_row;
+        $redirects_table->data[] = $redirect_row;
     }
     
-    $tool_redirectplus_redirects_table_html = html_writer::table($tool_redirectplus_redirects_table);
+    $redirects_table_html = html_writer::table($redirects_table);
+    } else {
+        $redirects_table_html = '';
+    }
+    
+    // Store in cache.
+    $cached_data = [
+        'has_redirects' => $has_redirects,
+        'table_html' => $redirects_table_html,
+    ];
+    $redirects_cache->set($cache_key, $cached_data);
 } else {
-    $tool_redirectplus_redirects_table_html = '';
+    // Cache hit - use cached data.
+    $has_redirects = $cached_data['has_redirects'];
+    $redirects_table_html = $cached_data['table_html'];
 }
 
-$tool_redirectplus_add_redirect_url = new moodle_url($PAGE->url, ['action' => 'add']);
+$add_redirect_url = new moodle_url($PAGE->url, ['action' => 'add']);
 
-$tool_redirectplus_redirects_data = [
-    'has_redirects' => $tool_redirectplus_has_redirects,
-    'show_edit_form' => $tool_redirectplus_show_edit_form,
-    'edit_form_html' => $tool_redirectplus_edit_form_html,
-    'table_html' => $tool_redirectplus_redirects_table_html,
-    'add_url' => $tool_redirectplus_add_redirect_url->out(false),
-    'sesskey' => sesskey(),
-    'strings' => [
-        'customredirects' => get_string('customredirects', 'tool_redirectplus'),
-        'customredirects_desc' => get_string('customredirects_desc', 'tool_redirectplus'),
-        'addredirect' => get_string('addredirect', 'tool_redirectplus'),
-        'noredirects' => get_string('noredirects', 'tool_redirectplus'),
-        'redirectexamples' => get_string('redirectexamples', 'tool_redirectplus'),
-        'redirectexamples_desc' => get_string('redirectexamples_desc', 'tool_redirectplus'),
-    ],
-];
-
-$tool_redirectplus_redirects_tab = $tool_redirectplus_renderer->render_redirects_tab($tool_redirectplus_redirects_data);
+$redirects_tab = $renderer->render_redirects_tab(
+    $has_redirects,
+    $show_edit_form,
+    $edit_form_html,
+    $redirects_table_html,
+    $add_redirect_url->out(false),
+    sesskey()
+);
 
 // SETTINGS TAB - Build data (combined with setup instructions).
-$tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
-$tool_redirectplus_redirect_url = get_config('tool_redirectplus', 'redirect_url');
-$tool_redirectplus_custom_message = get_config('tool_redirectplus', 'custom_message');
-$tool_redirectplus_disable_redirect_admin = get_config('tool_redirectplus', 'disable_redirect_admin') ?: 1;
-$tool_redirectplus_enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
-if ($tool_redirectplus_enable_404_logging === false) {
-    $tool_redirectplus_enable_404_logging = 1; // Default to enabled.
+$behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
+$redirect_url_config = get_config('tool_redirectplus', 'redirect_url');
+$custom_message = get_config('tool_redirectplus', 'custom_message');
+$disable_redirect_admin = get_config('tool_redirectplus', 'disable_redirect_admin') ?: 1;
+$enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
+if ($enable_404_logging === false) {
+    $enable_404_logging = 1; // Default to enabled.
 }
-$tool_redirectplus_max_404_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
-$tool_redirectplus_error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
+$max_404_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
+$error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
 
 // Initialize TinyMCE editor.
-$tool_redirectplus_editor = editors_get_preferred_editor(FORMAT_HTML);
-$tool_redirectplus_editor->use_editor('id_custom_message', [
+$editor = editors_get_preferred_editor(FORMAT_HTML);
+$editor->use_editor('id_custom_message', [
     'maxfiles' => 0,
     'maxbytes' => 0,
-    'context' => $tool_redirectplus_context,
+    'context' => $context,
     'subdirs' => false,
 ]);
 
-$tool_redirectplus_settings_data = [
+$settings_data = [
     'form_action' => $PAGE->url->out(false),
     'sesskey' => sesskey(),
-    'behavior' => $tool_redirectplus_behavior,
-    'behavior_message' => $tool_redirectplus_behavior === 'message',
-    'behavior_redirect' => $tool_redirectplus_behavior === 'redirect',
-    'custom_message' => $tool_redirectplus_custom_message,
-    'redirect_url' => $tool_redirectplus_redirect_url,
-    'disable_redirect_admin' => $tool_redirectplus_disable_redirect_admin,
-    'enable_404_logging' => $tool_redirectplus_enable_404_logging,
-    'max_404_records' => $tool_redirectplus_max_404_records,
-    'error404_url' => $tool_redirectplus_error404_url,
+    'behavior' => $behavior,
+    'behavior_message' => $behavior === 'message',
+    'behavior_redirect' => $behavior === 'redirect',
+    'custom_message' => $custom_message,
+    'redirect_url' => $redirect_url_config,
+    'disable_redirect_admin' => $disable_redirect_admin,
+    'enable_404_logging' => $enable_404_logging,
+    'max_404_records' => $max_404_records,
+    'error404_url' => $error404_url,
     'wwwroot' => $CFG->wwwroot,
-    'strings' => [
-        'error404behavior' => get_string('error404behavior', 'tool_redirectplus'),
-        'behavior' => get_string('behavior', 'tool_redirectplus'),
-        'behavior_desc' => get_string('behavior_desc', 'tool_redirectplus'),
-        'behaviormessage' => get_string('behaviormessage', 'tool_redirectplus'),
-        'behaviorredirect' => get_string('behaviorredirect', 'tool_redirectplus'),
-        'custommessage' => get_string('custommessage', 'tool_redirectplus'),
-        'custommessage_help' => get_string('custommessage_help', 'tool_redirectplus'),
-        'redirecturl' => get_string('redirecturl', 'tool_redirectplus'),
-        'redirecturl_help' => get_string('redirecturl_help', 'tool_redirectplus'),
-        'disableredirectadmin' => get_string('disableredirectadmin', 'tool_redirectplus'),
-        'disableredirectadmin_help' => get_string('disableredirectadmin_help', 'tool_redirectplus'),
-        'error404_configuration' => get_string('error404_configuration', 'tool_redirectplus'),
-        'enable_404_logging' => get_string('enable_404_logging', 'tool_redirectplus'),
-        'enable_404_logging_help' => get_string('enable_404_logging_help', 'tool_redirectplus'),
-        'max_404_records' => get_string('max_404_records', 'tool_redirectplus'),
-        'max_404_records_help' => get_string('max_404_records_help', 'tool_redirectplus'),
-        'savesettings' => get_string('savesettings', 'tool_redirectplus'),
-        'viewsetupinstructions' => get_string('viewsetupinstructions', 'tool_redirectplus'),
-        'hidesetupinstructions' => get_string('hidesetupinstructions', 'tool_redirectplus'),
-        'setupinstructions' => get_string('setupinstructions', 'tool_redirectplus'),
-        'your404url' => get_string('your404url', 'tool_redirectplus'),
-        'serverconfiguration' => get_string('serverconfiguration', 'tool_redirectplus'),
-        'config_recommendation' => get_string('config_recommendation', 'tool_redirectplus'),
-        'recommended' => get_string('recommended', 'tool_redirectplus'),
-        'fallback_only' => get_string('fallback_only', 'tool_redirectplus'),
-        'apache_method' => get_string('apache_method', 'tool_redirectplus'),
-        'apache_instructions' => get_string('apache_instructions', 'tool_redirectplus'),
-        'apache_note' => get_string('apache_note', 'tool_redirectplus'),
-        'nginx_method' => get_string('nginx_method', 'tool_redirectplus'),
-        'nginx_instructions' => get_string('nginx_instructions', 'tool_redirectplus'),
-        'nginx_note' => get_string('nginx_note', 'tool_redirectplus'),
-        'htaccess_method' => get_string('htaccess_method', 'tool_redirectplus'),
-        'htaccess_warning_title' => get_string('htaccess_warning_title', 'tool_redirectplus'),
-        'htaccess_warning' => get_string('htaccess_warning', 'tool_redirectplus'),
-        'htaccess_backup_title' => get_string('htaccess_backup_title', 'tool_redirectplus'),
-        'htaccess_backup_warning' => get_string('htaccess_backup_warning', 'tool_redirectplus'),
-        'htaccess_manual_instructions_title' => get_string('htaccess_manual_instructions_title', 'tool_redirectplus'),
-        'htaccess_manual_step1' => get_string('htaccess_manual_step1', 'tool_redirectplus'),
-        'htaccess_manual_step2' => get_string('htaccess_manual_step2', 'tool_redirectplus'),
-        'htaccess_manual_note' => get_string('htaccess_manual_note', 'tool_redirectplus'),
-        'test_configuration' => get_string('test_configuration', 'tool_redirectplus'),
-        'test_configuration_desc' => get_string('test_configuration_desc', 'tool_redirectplus'),
-        'test_404_tracking' => get_string('test_404_tracking', 'tool_redirectplus'),
-        'testing' => get_string('testing', 'tool_redirectplus'),
-        'test_success' => get_string('test_success', 'tool_redirectplus'),
-        'test_failure' => get_string('test_failure', 'tool_redirectplus'),
-        'test_error' => get_string('test_error', 'tool_redirectplus'),
-    ],
 ];
 
-$tool_redirectplus_settings_tab = $tool_redirectplus_renderer->render_settings_tab($tool_redirectplus_settings_data);
+$settings_tab = $renderer->render_settings_tab($settings_data);
 
 // Render main page with tabs.
-$tool_redirectplus_main_data = [
-    'report_tab' => $tool_redirectplus_report_tab,
-    'redirects_tab' => $tool_redirectplus_redirects_tab,
-    'settings_tab' => $tool_redirectplus_settings_tab,
-    'strings' => [
-        'tabreport' => get_string('tabreport', 'tool_redirectplus'),
-        'tabredirects' => get_string('tabredirects', 'tool_redirectplus'),
-        'tabsettings' => get_string('tabsettings', 'tool_redirectplus'),
-    ],
-];
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'tool_redirectplus'));
-echo $tool_redirectplus_renderer->render_main_page($tool_redirectplus_main_data);
+echo $renderer->render_main_page(
+    $report_tab,
+    $redirects_tab,
+    $settings_tab
+);
 echo $OUTPUT->footer();
