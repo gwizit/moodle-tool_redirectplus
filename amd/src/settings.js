@@ -194,6 +194,22 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
             $(this).html('<strong>' + config.htaccessText + '</strong> (Fallback Only)' + icon);
         });
 
+        // Handle collapse toggle icons for 404 Error Configuration.
+        $('#error404Toggle').on('click', function(e) {
+            e.preventDefault();
+            $('#collapseError404Config').collapse('toggle');
+            var icon = $('#error404Icon');
+            var isExpanded = $('#collapseError404Config').hasClass('show');
+            
+            if (isExpanded) {
+                // Currently expanded, about to collapse
+                icon.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+            } else {
+                // Currently collapsed, about to expand
+                icon.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+            }
+        });
+
         // Handle test button
         $('#btn-test-404').on('click', function(e) {
             e.preventDefault();

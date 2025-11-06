@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_redirectplus';
-$plugin->release = '1.5.0';
-$plugin->version = 2025110303;
+$plugin->release = '1.6.0';
+$plugin->version = 2025110501;
 $plugin->requires = 2023100900; // Moodle 4.3 or later.
 $plugin->maturity = MATURITY_STABLE;

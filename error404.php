@@ -72,19 +72,30 @@ $tool_redirectplus_useragent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $tool_redirectplus_ip = getremoteaddr();
 $tool_redirectplus_userid = $USER->id ?? 0;
 
-try {
-    $tool_redirectplus_record = new stdClass();
-    $tool_redirectplus_record->url = $tool_redirectplus_url;
-    $tool_redirectplus_record->referrer = $tool_redirectplus_referrer;
-    $tool_redirectplus_record->userid = $tool_redirectplus_userid;
-    $tool_redirectplus_record->timecreated = time();
-    $tool_redirectplus_record->ip = $tool_redirectplus_ip;
-    $tool_redirectplus_record->useragent = $tool_redirectplus_useragent;
+// Check if 404 logging is enabled.
+$tool_redirectplus_enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
+if ($tool_redirectplus_enable_404_logging === false) {
+    $tool_redirectplus_enable_404_logging = 1; // Default to enabled if not set.
+}
 
-    $DB->insert_record('tool_redirectplus_404', $tool_redirectplus_record);
-} catch (Exception $tool_redirectplus_exception) {
-    // Silently fail - don't break the error page.
-    debugging('tool_redirectplus: Failed to log 404 error - ' . $tool_redirectplus_exception->getMessage(), DEBUG_DEVELOPER);
+if ($tool_redirectplus_enable_404_logging) {
+    try {
+        $tool_redirectplus_record = new stdClass();
+        $tool_redirectplus_record->url = $tool_redirectplus_url;
+        $tool_redirectplus_record->referrer = $tool_redirectplus_referrer;
+        $tool_redirectplus_record->userid = $tool_redirectplus_userid;
+        $tool_redirectplus_record->timecreated = time();
+        $tool_redirectplus_record->ip = $tool_redirectplus_ip;
+        $tool_redirectplus_record->useragent = $tool_redirectplus_useragent;
+
+        $DB->insert_record('tool_redirectplus_404', $tool_redirectplus_record);
+        
+        // Prune old records to maintain the maximum limit.
+        tool_redirectplus_prune_404_records();
+    } catch (Exception $tool_redirectplus_exception) {
+        // Silently fail - don't break the error page.
+        debugging('tool_redirectplus: Failed to log 404 error - ' . $tool_redirectplus_exception->getMessage(), DEBUG_DEVELOPER);
+    }
 }
 
 // First, check for custom URL-specific redirects (unless user is admin and bypass is enabled).

@@ -92,14 +92,16 @@ function tool_redirectplus_evaluate_redirect($redirect, $isloggedin, $userlang) 
     
     // Then check language parameter if enabled (can override login-based URL).
     if (!empty($options['use_language_param']) && !empty($userlang)) {
-        // Normalize language code (take first 2 characters).
-        $userlang = strtolower(substr($userlang, 0, 2));
+        $userlang = strtolower($userlang);
         
         if (!empty($options['language_rules']) && is_array($options['language_rules'])) {
+            // Process rules in order - stop at first match.
             foreach ($options['language_rules'] as $rule) {
-                if (isset($rule['lang']) && strtolower($rule['lang']) === $userlang) {
-                    $destinationurl = $rule['url'];
-                    break;
+                if (isset($rule['lang']) && !empty($rule['lang'])) {
+                    if (tool_redirectplus_match_language($rule['lang'], $userlang)) {
+                        $destinationurl = $rule['url'];
+                        break; // Stop at first match.
+                    }
                 }
             }
             
@@ -144,25 +146,72 @@ function tool_redirectplus_should_bypass_redirect() {
 /**
  * Get the user's preferred language from browser headers.
  *
- * @return string The language code (e.g., 'en', 'es', 'fr')
+ * @return string The full language code (e.g., 'en-US', 'es-ES', 'pt-BR')
  */
 function tool_redirectplus_get_user_language() {
     // First try to get from Moodle user preference if logged in.
     global $USER;
     
     if (isloggedin() && !isguestuser() && !empty($USER->lang)) {
-        return $USER->lang;
+        return strtolower($USER->lang);
     }
     
     // Otherwise get from browser Accept-Language header.
     if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
         $langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
         if (!empty($langs[0])) {
-            // Extract the language code (first 2 characters before any dash or semicolon).
-            $lang = strtok($langs[0], '-;');
-            return strtolower(trim($lang));
+            // Extract the full language code (before any semicolon).
+            $lang = trim(strtok($langs[0], ';'));
+            return strtolower($lang);
         }
     }
     
     return 'en'; // Default fallback.
+}
+
+/**
+ * Match a language code against a pattern with wildcard support.
+ *
+ * @param string $pattern The pattern to match (e.g., 'en', 'en-us', 'pt*', 'en-*')
+ * @param string $language The language code to test (e.g., 'en-us', 'pt-br')
+ * @return bool True if the language matches the pattern
+ */
+function tool_redirectplus_match_language($pattern, $language) {
+    $pattern = strtolower(trim($pattern));
+    $language = strtolower(trim($language));
+    
+    // Exact match.
+    if ($pattern === $language) {
+        return true;
+    }
+    
+    // Wildcard matching.
+    if (strpos($pattern, '*') !== false) {
+        // Convert wildcard pattern to regex.
+        $regex = '/^' . str_replace(['\*'], ['.*'], preg_quote($pattern, '/')) . '$/';
+        return preg_match($regex, $language) === 1;
+    }
+    
+    return false;
+}
+
+/**
+ * Prune old 404 error records to maintain the maximum limit.
+ * Deletes the oldest records when the count exceeds the configured maximum.
+ *
+ * @return void
+ */
+function tool_redirectplus_prune_404_records() {
+    global $DB;
+    
+    $max_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
+    $current_count = $DB->count_records('tool_redirectplus_404');
+    
+    if ($current_count > $max_records) {
+        $to_delete = $current_count - $max_records;
+        $old_records = $DB->get_records('tool_redirectplus_404', null, 'timecreated ASC', 'id', 0, $to_delete);
+        foreach ($old_records as $old_record) {
+            $DB->delete_records('tool_redirectplus_404', ['id' => $old_record->id]);
+        }
+    }
 }

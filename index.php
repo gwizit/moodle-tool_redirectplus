@@ -108,8 +108,19 @@ if (data_submitted() && confirm_sesskey() && $tool_redirectplus_action === 'save
     redirect($redirect_url, get_string('redirectsaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
-// Handle settings form submission.
+// Handle settings form submission (includes both 404 config and behavior settings).
 if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALPHA) === 'settings') {
+    // 404 logging settings.
+    $tool_redirectplus_enable_404_logging = optional_param('enable_404_logging', 0, PARAM_INT);
+    $tool_redirectplus_max_404_records = optional_param('max_404_records', 1000, PARAM_INT);
+    
+    set_config('enable_404_logging', $tool_redirectplus_enable_404_logging, 'tool_redirectplus');
+    set_config('max_404_records', $tool_redirectplus_max_404_records, 'tool_redirectplus');
+    
+    // Prune 404 records if the new limit is lower than current count.
+    tool_redirectplus_prune_404_records();
+    
+    // 404 behavior settings.
     $tool_redirectplus_behavior = optional_param('behavior', 'message', PARAM_ALPHA);
     $tool_redirectplus_redirect_url = optional_param('redirect_url', '', PARAM_TEXT);
     $tool_redirectplus_custom_message = optional_param('custom_message', '', PARAM_RAW);
@@ -123,14 +134,17 @@ if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALP
         if (!empty($tool_redirectplus_redirect_url) && filter_var($tool_redirectplus_redirect_url, FILTER_VALIDATE_URL)) {
             set_config('redirect_url', $tool_redirectplus_redirect_url, 'tool_redirectplus');
         } else if (!empty($tool_redirectplus_redirect_url)) {
-            redirect($PAGE->url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
+            $tool_redirectplus_error_url = new moodle_url($PAGE->url, [], 'settings');
+            redirect($tool_redirectplus_error_url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
         set_config('custom_message', $tool_redirectplus_custom_message, 'tool_redirectplus');
         set_config('custom_message_format', $tool_redirectplus_custom_message_format, 'tool_redirectplus');
     }
 
-    redirect($PAGE->url, get_string('settingssaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
+    // Redirect back to settings tab.
+    $tool_redirectplus_settings_url = new moodle_url($PAGE->url, [], 'settings');
+    redirect($tool_redirectplus_settings_url, get_string('settingssaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Handle delete redirect.
@@ -390,6 +404,14 @@ if ($tool_redirectplus_show_edit_form) {
             'delete' => get_string('delete'),
             'addlanguagerule' => get_string('addlanguagerule', 'tool_redirectplus'),
             'defaultlanguageurl' => get_string('defaultlanguageurl', 'tool_redirectplus'),
+            'defaultlanguageurl_help' => get_string('defaultlanguageurl_help', 'tool_redirectplus'),
+            'language_priority_title' => get_string('language_priority_title', 'tool_redirectplus'),
+            'language_priority_desc' => get_string('language_priority_desc', 'tool_redirectplus'),
+            'language_wildcard_exact' => get_string('language_wildcard_exact', 'tool_redirectplus'),
+            'language_wildcard_partial' => get_string('language_wildcard_partial', 'tool_redirectplus'),
+            'language_wildcard_all' => get_string('language_wildcard_all', 'tool_redirectplus'),
+            'moveup' => get_string('moveup', 'tool_redirectplus'),
+            'movedown' => get_string('movedown', 'tool_redirectplus'),
             'saveredirect' => get_string('saveredirect', 'tool_redirectplus'),
             'cancel' => get_string('cancel'),
         ],
@@ -501,6 +523,11 @@ $tool_redirectplus_behavior = get_config('tool_redirectplus', 'behavior') ?: 'me
 $tool_redirectplus_redirect_url = get_config('tool_redirectplus', 'redirect_url');
 $tool_redirectplus_custom_message = get_config('tool_redirectplus', 'custom_message');
 $tool_redirectplus_disable_redirect_admin = get_config('tool_redirectplus', 'disable_redirect_admin') ?: 1;
+$tool_redirectplus_enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
+if ($tool_redirectplus_enable_404_logging === false) {
+    $tool_redirectplus_enable_404_logging = 1; // Default to enabled.
+}
+$tool_redirectplus_max_404_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
 $tool_redirectplus_error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
 
 // Initialize TinyMCE editor.
@@ -521,6 +548,8 @@ $tool_redirectplus_settings_data = [
     'custom_message' => $tool_redirectplus_custom_message,
     'redirect_url' => $tool_redirectplus_redirect_url,
     'disable_redirect_admin' => $tool_redirectplus_disable_redirect_admin,
+    'enable_404_logging' => $tool_redirectplus_enable_404_logging,
+    'max_404_records' => $tool_redirectplus_max_404_records,
     'error404_url' => $tool_redirectplus_error404_url,
     'wwwroot' => $CFG->wwwroot,
     'strings' => [
@@ -535,6 +564,11 @@ $tool_redirectplus_settings_data = [
         'redirecturl_help' => get_string('redirecturl_help', 'tool_redirectplus'),
         'disableredirectadmin' => get_string('disableredirectadmin', 'tool_redirectplus'),
         'disableredirectadmin_help' => get_string('disableredirectadmin_help', 'tool_redirectplus'),
+        'error404_configuration' => get_string('error404_configuration', 'tool_redirectplus'),
+        'enable_404_logging' => get_string('enable_404_logging', 'tool_redirectplus'),
+        'enable_404_logging_help' => get_string('enable_404_logging_help', 'tool_redirectplus'),
+        'max_404_records' => get_string('max_404_records', 'tool_redirectplus'),
+        'max_404_records_help' => get_string('max_404_records_help', 'tool_redirectplus'),
         'savesettings' => get_string('savesettings', 'tool_redirectplus'),
         'viewsetupinstructions' => get_string('viewsetupinstructions', 'tool_redirectplus'),
         'hidesetupinstructions' => get_string('hidesetupinstructions', 'tool_redirectplus'),
