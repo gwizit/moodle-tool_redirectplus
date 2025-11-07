@@ -30,13 +30,19 @@
     * strings - Language strings
 }}
 
-<div class="tab-pane fade" id="settings">
+<div class="tab-pane fade show active" id="settings">
+    {{> tool_redirectplus/donation_banner }}
+    
+    <div class="alert alert-success mb-4">
+        <h4><i class="fa fa-check-circle"></i> {{#str}}welcome_title, tool_redirectplus{{/str}}</h4>
+        <p>{{#str}}welcome_message, tool_redirectplus{{/str}}</p>
+    </div>
     
     <!-- Setup Instructions Section - Collapsible -->
-    <div class="card mb-4">
+    <div class="card mb-3">
         <div class="card-header bg-info text-white">
             <button type="button" id="toggleSetupInstructions" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
-                <i class="fa fa-chevron-down" id="setupIcon"></i> <strong>{{#str}}viewsetupinstructions, tool_redirectplus{{/str}}</strong>
+                <i class="fa fa-chevron-right" id="setupIcon"></i> <strong>{{#str}}viewsetupinstructions, tool_redirectplus{{/str}}</strong>
             </button>
         </div>
         <div id="setupInstructionsContent" class="collapse">
@@ -54,12 +60,12 @@
 
                 <!-- Apache Instructions -->
                 <div class="card mb-3">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-info text-white">
                         <a href="#" id="apacheToggle" class="text-decoration-none text-white font-weight-bold">
-                            <strong>{{#str}}apache_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▼
+                            <strong>{{#str}}apache_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
-                    <div id="collapseApache" class="collapse show">
+                    <div id="collapseApache" class="collapse">
                         <div class="card-body">
                             <p>{{#str}}apache_instructions, tool_redirectplus{{/str}}</p>
                             <pre><code>ErrorDocument 404 {{error404_url}}?url=%{REQUEST_URI}</code></pre>
@@ -70,7 +76,7 @@
 
                 <!-- Nginx Instructions -->
                 <div class="card mb-3">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-info text-white">
                         <a href="#" id="nginxToggle" class="text-decoration-none text-white font-weight-bold">
                             <strong>{{#str}}nginx_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▶
                         </a>
@@ -86,8 +92,8 @@
 
                 <!-- .htaccess Manual Configuration Method -->
                 <div class="card mb-3">
-                    <div class="card-header bg-warning">
-                        <a href="#" id="htaccessToggle" class="text-decoration-none text-dark font-weight-bold">
+                    <div class="card-header bg-info text-white">
+                        <a href="#" id="htaccessToggle" class="text-decoration-none text-white font-weight-bold">
                             <strong>{{#str}}htaccess_method, tool_redirectplus{{/str}}</strong> ({{#str}}fallback_only, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
@@ -116,7 +122,7 @@
 
                 <!-- Test Section -->
                 <div class="card mb-3 mt-4">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-info text-white">
                         <strong>{{#str}}test_configuration, tool_redirectplus{{/str}}</strong>
                     </div>
                     <div class="card-body">
@@ -150,14 +156,34 @@
         <input type="hidden" name="sesskey" value="{{sesskey}}">
         <input type="hidden" name="tab" value="settings">
 
+        <!-- Redirect Configuration Section -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <button type="button" id="redirectConfigToggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
+                    <i class="fa fa-chevron-right" id="redirectConfigIcon"></i> <strong>{{#str}}redirect_configuration, tool_redirectplus{{/str}}</strong>
+                </button>
+            </div>
+            <div id="collapseRedirectConfig" class="collapse">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" name="disable_redirect_admin" id="id_disable_redirect_admin" value="1" class="custom-control-input" {{#disable_redirect_admin}}checked{{/disable_redirect_admin}}>
+                            <label for="id_disable_redirect_admin" class="custom-control-label font-weight-bold">{{#str}}disableredirectadmin, tool_redirectplus{{/str}}</label>
+                        </div>
+                        <div class="form-text">{{#str}}disableredirectadmin_help, tool_redirectplus{{/str}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 404 Error Page Configuration Section -->
         <div class="card mb-3">
             <div class="card-header bg-info text-white">
                 <button type="button" id="error404Toggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
-                    <i class="fa fa-chevron-down" id="error404Icon"></i> <strong>{{#str}}error404_configuration, tool_redirectplus{{/str}}</strong>
+                    <i class="fa fa-chevron-right" id="error404Icon"></i> <strong>{{#str}}error404_configuration, tool_redirectplus{{/str}}</strong>
                 </button>
             </div>
-            <div id="collapseError404Config" class="collapse show">
+            <div id="collapseError404Config" class="collapse">
                 <div class="card-body">
                     <div class="form-group">
                         <div class="custom-control custom-checkbox">
@@ -198,14 +224,6 @@
                         <label for="id_redirect_url" class="font-weight-bold">{{#str}}redirecturl, tool_redirectplus{{/str}}</label>
                         <input type="text" name="redirect_url" id="id_redirect_url" value="{{redirect_url}}" class="form-control" placeholder="https://example.com/404-page">
                         <div class="form-text">{{#str}}redirecturl_help, tool_redirectplus{{/str}}</div>
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" name="disable_redirect_admin" id="id_disable_redirect_admin" value="1" class="custom-control-input" {{#disable_redirect_admin}}checked{{/disable_redirect_admin}}>
-                            <label for="id_disable_redirect_admin" class="custom-control-label font-weight-bold">{{#str}}disableredirectadmin, tool_redirectplus{{/str}}</label>
-                        </div>
-                        <div class="form-text">{{#str}}disableredirectadmin_help, tool_redirectplus{{/str}}</div>
                     </div>
                 </div>
             </div>

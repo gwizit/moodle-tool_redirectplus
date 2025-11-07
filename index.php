@@ -250,7 +250,23 @@ $edit_form_html = '';
 if ($show_edit_form) {
     // Render edit form - the output class handles all data processing.
     $redirect_id = $editid > 0 ? $editid : null;
-    $edit_form_html = $renderer->render_edit_redirect_form($redirect_id, $baseurl);
+    
+    // If adding a new redirect with a pre-filled source URL.
+    $prefill_source_url = optional_param('source_url', '', PARAM_TEXT);
+    if ($action === 'add' && !empty($prefill_source_url) && !$redirect_id) {
+        // Create a redirect object with the pre-filled source URL.
+        $redirect_obj = new stdClass();
+        $redirect_obj->id = 0;
+        $redirect_obj->source_url = $prefill_source_url;
+        $redirect_obj->enabled = 1;
+        $redirect_obj->options = [
+            'type' => 'simple',
+            'destination_url' => '',
+        ];
+        $edit_form_html = $renderer->render_edit_redirect_form($redirect_obj, $baseurl);
+    } else {
+        $edit_form_html = $renderer->render_edit_redirect_form($redirect_id, $baseurl);
+    }
 }
 
 // Initialize cache for redirects list.
@@ -280,8 +296,13 @@ if ($cached_data === false) {
     foreach ($redirects as $redirect) {
         $redirect_row = [];
         
-        // Source URL.
-        $redirect_row[] = html_writer::tag('code', s($redirect->source_url));
+        // Source URL - make it clickable.
+        $source_url_link = html_writer::link(
+            $CFG->wwwroot . $redirect->source_url,
+            s($redirect->source_url),
+            ['target' => '_blank', 'rel' => 'noopener noreferrer']
+        );
+        $redirect_row[] = html_writer::tag('code', $source_url_link, ['class' => 'd-inline-block']);
         
         // Redirect options summary.
         $redirect_opts = json_decode($redirect->redirect_options, true);

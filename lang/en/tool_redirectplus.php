@@ -137,6 +137,7 @@ $string['customredirects'] = 'Custom URL Redirects';
 $string['customredirects_desc'] = 'Create custom redirects for specific URLs with optional conditional parameters based on user login status and language. These redirects work for BOTH existing pages (like homepage or /faq/) and 404 errors automatically using Moodle\'s callback system.';
 $string['addredirect'] = 'Add New Redirect';
 $string['editredirect'] = 'Edit Redirect';
+$string['addeditredirect'] = 'Add/Edit Redirect';
 $string['deleteredirect'] = 'Delete Redirect';
 $string['deleteredirectconfirm'] = 'Are you sure you want to delete this redirect?';
 $string['redirectdeleted'] = 'Redirect deleted successfully.';
@@ -203,3 +204,15 @@ $string['enable_404_logging'] = 'Enable 404 error logging';
 $string['enable_404_logging_help'] = 'When enabled, all 404 errors will be logged to the database for tracking and analysis. When disabled, no 404 errors will be recorded and the 404 Errors tab will not show new entries.';
 $string['max_404_records'] = 'Maximum 404 error records to keep';
 $string['max_404_records_help'] = 'The maximum number of 404 error records to store in the database. When this limit is reached, the oldest records will be automatically deleted to make room for new ones. Default: 1000 records.';
+
+// Donation strings.
+$string['donation_title'] = 'Support Redirect Plus Development';
+$string['donation_message'] = 'If you find Redirect Plus useful, please consider making a donation to support continued development and maintenance. Your contribution helps keep this plugin free and up-to-date!';
+$string['donate_now'] = 'Donate Now';
+
+// Redirect Configuration.
+$string['redirect_configuration'] = 'Redirect Configuration';
+
+// Welcome message.
+$string['welcome_title'] = 'Welcome to Redirect Plus!';
+$string['welcome_message'] = 'Redirect Plus is a powerful tool that gives you complete control over your Moodle site\'s redirects and 404 error handling. Create custom redirects with optional conditional logic based on user login status or language preference. The plugin also records 404 errors and allows you to customize how they are handled - either display a custom message or redirect users to a specific page. Get started by reviewing the setup instructions below and configuring your preferences.';

@@ -1,10 +1,22 @@
 # Redirect Plus #
 
-A Moodle admin tool plugin that automatically tracks and logs all 404 (Page Not Found) errors occurring on your Moodle site.
+A powerful Moodle admin tool plugin for managing custom redirects and 404 error handling.
 
 ## Description ##
 
-Redirect Plus helps you identify broken links, missing pages, and navigation issues by recording every 404 error that occurs on your Moodle site. The plugin captures comprehensive information about each error including:
+Redirect Plus is a comprehensive solution that gives you complete control over your Moodle site's redirects and 404 error handling. Create custom redirects with optional conditional logic based on user login status or language preference. The plugin also records 404 errors and allows you to customize how they are handled - either display a custom message or redirect users to a specific page.
+
+### Key Capabilities:
+
+**Custom Redirects:**
+- Create redirects for any URL (existing pages or 404 errors)
+- Add conditional logic based on user login status (logged in vs. logged out)
+- Configure language-based redirects for multilingual sites
+- Redirect existing pages like homepage, /faq/, or any other page
+- Enable/disable individual redirects without deleting them
+
+**404 Error Management:**
+The plugin captures comprehensive information about each 404 error including:
 
 - The URL that generated the 404 error
 - The referrer (where the user came from)

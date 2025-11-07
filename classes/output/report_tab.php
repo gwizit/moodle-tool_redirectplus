@@ -137,13 +137,34 @@ class report_tab implements renderable, templatable {
             $row[] = userdate($record->timecreated);
 
             // Actions.
+            // Check if redirect already exists for this URL.
+            $redirect = $DB->get_record('tool_redirectplus_redirects', ['source_url' => $record->url]);
+            
+            // Single Add/Edit Redirect button.
+            if ($redirect) {
+                $redirecturl = new moodle_url($this->baseurl, [
+                    'editid' => $redirect->id,
+                ]);
+            } else {
+                $redirecturl = new moodle_url($this->baseurl, [
+                    'action' => 'add',
+                    'source_url' => $record->url,
+                ]);
+            }
+            $redirectbutton = html_writer::link($redirecturl->out(false) . '#redirects', get_string('addeditredirect', 'tool_redirectplus'), [
+                'class' => 'btn btn-sm btn-block btn-primary mb-1',
+            ]);
+            
+            // Delete button.
             $deleteurl = new moodle_url($this->baseurl, [
                 'delete' => $record->id,
                 'sesskey' => sesskey(),
             ]);
-            $row[] = html_writer::link($deleteurl, get_string('delete'), [
-                'class' => 'btn btn-sm btn-danger',
+            $deletebutton = html_writer::link($deleteurl, get_string('delete'), [
+                'class' => 'btn btn-sm btn-block btn-danger',
             ]);
+            
+            $row[] = $redirectbutton . $deletebutton;
 
             $table->data[] = $row;
         }

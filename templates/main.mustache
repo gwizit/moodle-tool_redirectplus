@@ -27,20 +27,20 @@
 
 <ul class="nav nav-tabs mb-3" id="redirectplus-tabs" role="tablist">
     <li class="nav-item">
-        <a class="nav-link active" id="report-tab" data-toggle="tab" href="#report" role="tab">{{#str}}tabreport, tool_redirectplus{{/str}}</a>
+        <a class="nav-link active" id="settings-tab" data-toggle="tab" href="#settings" role="tab">{{#str}}tabsettings, tool_redirectplus{{/str}}</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" id="redirects-tab" data-toggle="tab" href="#redirects" role="tab">{{#str}}tabredirects, tool_redirectplus{{/str}}</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab">{{#str}}tabsettings, tool_redirectplus{{/str}}</a>
+        <a class="nav-link" id="report-tab" data-toggle="tab" href="#report" role="tab">{{#str}}tabreport, tool_redirectplus{{/str}}</a>
     </li>
 </ul>
 
 <div class="tab-content" id="redirectplus-tab-content">
-    {{{report_tab}}}
-    {{{redirects_tab}}}
     {{{settings_tab}}}
+    {{{redirects_tab}}}
+    {{{report_tab}}}
 </div>
 
 {{#js}}

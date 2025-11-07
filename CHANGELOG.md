@@ -2,6 +2,30 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [1.8.1] - 2025-11-06
+
+### UI/UX Improvements
+
+**Tab Reordering and Welcome Message**
+- Reordered tabs: Settings (first), Custom Redirects (second), 404 Errors (third)
+- Added welcome message to Settings tab explaining plugin functionality
+- All dropdown sections now collapsed by default for cleaner interface
+- Created new "Redirect Configuration" section for redirect-specific settings
+- Moved "Disable redirect for administrators" to new Redirect Configuration section
+- 404 Error Page Configuration section now collapsed by default
+
+**Donation Support**
+- Added donation banners to top and bottom of all tabs
+- Created reusable donation banner template
+- Link to support plugin development: https://square.link/u/C0Xn8NZw
+
+**Template Fixes**
+- Fixed mustache syntax errors with `{{#str}}` helper and triple braces
+- Corrected mismatched tag delimiters in multiple templates
+- Updated redirects_tab, settings_tab, and edit_redirect_form templates
+
+### Version History
+
 ## [1.5.0] - 2025-11-03
 
 ### Major Feature - Custom URL Redirects with Conditional Parameters
