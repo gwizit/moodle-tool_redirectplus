@@ -2,6 +2,30 @@
 
 A powerful Moodle admin tool plugin for managing custom redirects and 404 error handling.
 
+---
+
+## 💝 Support Development ##
+
+**If you find Redirect Plus useful, please consider supporting its continued development!**
+
+While not required, donations help keep this plugin free, up-to-date, and feature-rich. Every little bit helps! 🙏
+
+#### 💳 Donate via Square
+**Quick and easy - any amount appreciated!**
+
+[**👉 Click Here to Donate**](https://square.link/u/C0Xn8NZw)
+
+**Your support makes a difference!** It helps me dedicate more time to:
+- Adding new features
+- Fixing bugs promptly
+- Maintaining compatibility with new Moodle versions
+- Providing support to users
+- Creating documentation and tutorials
+
+Thank you for using Redirect Plus! 🎉
+
+---
+
 ## Description ##
 
 Redirect Plus is a comprehensive solution that gives you complete control over your Moodle site's redirects and 404 error handling. Create custom redirects with optional conditional logic based on user login status or language preference. The plugin also records 404 errors and allows you to customize how they are handled - either display a custom message or redirect users to a specific page.
@@ -77,7 +101,18 @@ This information is invaluable for:
 
 ## Setup ##
 
-**Important:** After installation, you must configure your web server to use the plugin's custom 404 page.
+**Important:** After installation, you must configure your web server to enable 404 error logging.
+
+### 🔴 Server Configuration Requirement
+
+**HIGHLY RECOMMENDED:** Access to your Apache or Nginx server configuration files is strongly preferred for optimal performance and reliability. The `.htaccess` method should only be used as a last resort fallback.
+
+**Why server configuration is preferred:**
+- **Reliability**: Works consistently across all PHP configurations (PHP-FPM, FastCGI, mod_php)
+- **Performance**: More efficient than `.htaccess` file-based configuration
+- **Compatibility**: The `.htaccess` auto-prepend method does NOT work with PHP-FPM or FastCGI (most modern hosting)
+- **Stability**: Avoids potential 500 Internal Server Errors
+- **Best Practice**: Follows Moodle and industry security standards
 
 ### Quick Setup Steps:
 
@@ -85,15 +120,15 @@ This information is invaluable for:
 2. **Navigate to the plugin:** Site administration > Redirect Plus
 3. **Go to the "Setup Instructions" tab**
 4. **Copy your custom 404 URL** (shown on the page)
-5. **Configure your web server** (instructions provided for Apache, Nginx, and Plesk)
-6. **Test the setup** using the test button
+5. **Configure your web server** using Apache or Nginx server configuration (RECOMMENDED)
+6. **Test the setup** using the automated test button
 7. **Configure behavior** in the Settings tab (optional)
 
 ### Detailed Server Configuration:
 
-#### Apache / .htaccess
+#### Apache Server Configuration (RECOMMENDED)
 
-Add this line to your `.htaccess` file in your Moodle root directory:
+Add this line to your Apache server configuration or virtual host file:
 
 ```apache
 ErrorDocument 404 /admin/tool/redirectplus/error404.php?url=%{REQUEST_URI}
@@ -101,7 +136,12 @@ ErrorDocument 404 /admin/tool/redirectplus/error404.php?url=%{REQUEST_URI}
 
 **Important:** The `?url=%{REQUEST_URI}` parameter passes the original URL to the error handler.
 
-#### Nginx
+**Why this method is recommended:**
+- Works with all PHP configurations (mod_php, PHP-FPM, FastCGI)
+- Best performance and reliability
+- Industry standard approach
+
+#### Nginx Server Configuration (RECOMMENDED)
 
 Add this line to your Nginx server configuration block:
 
@@ -110,6 +150,39 @@ error_page 404 /admin/tool/redirectplus/error404.php?url=$request_uri;
 ```
 
 **Important:** The `?url=$request_uri` parameter passes the original URL to the error handler.
+
+**Why this method is recommended:**
+- Works with all PHP configurations
+- Best performance and reliability
+- Industry standard approach
+
+#### .htaccess Method (FALLBACK ONLY - NOT RECOMMENDED)
+
+**⚠️ WARNING:** This method is provided as a last resort fallback only. It often does NOT work on modern hosting environments.
+
+**Known Issues:**
+- Does NOT work with PHP-FPM or FastCGI (most modern hosting uses these)
+- May cause 500 Internal Server Error
+- Requires mod_php and specific Apache settings
+- Has performance implications
+- Not supported on many hosting providers
+
+**Only use this method if:**
+- You cannot access your Apache server configuration
+- You have confirmed you are using mod_php (not PHP-FPM or FastCGI)
+- You have made a backup of your `.htaccess` file
+
+Add this line to your `.htaccess` file in Moodle root directory:
+
+```apache
+ErrorDocument 404 /admin/tool/redirectplus/error404.php?url=%{REQUEST_URI}
+```
+
+**If you get a 500 error after adding this line:**
+1. Immediately remove the line
+2. Restore your `.htaccess` backup
+3. Contact your hosting provider to request access to Apache or Nginx server configuration
+4. Use the Apache or Nginx server configuration method instead
 
 #### Plesk Control Panel
 
@@ -311,11 +384,29 @@ To watch for changes and auto-build:
 grunt watch
 ```
 
-## Support ##
+## 💝 Love This Plugin? ##
+
+**Help keep Redirect Plus free and actively maintained!**
+
+If this plugin has saved you time or made your Moodle site better, please consider showing your appreciation:
+
+### 💳 [**Donate via Square**](https://square.link/u/C0Xn8NZw)
+
+Your support helps fund:
+- ✨ New features and improvements
+- 🐛 Bug fixes and maintenance
+- 📚 Documentation and tutorials
+- 💬 Community support
+- ⚡ Faster response times
+
+**Every contribution matters - thank you!** 🙏
+
+## Support & Contact ##
 
 For issues, questions, or contributions, please contact:
-- Email: support@gwizit.com
-- Copyright: 2025 G Wiz IT Solutions
+- **Email:** support@gwizit.com
+- **Copyright:** 2025 G Wiz IT Solutions
+- **Website:** [gwizit.com](https://gwizit.com)
 
 ## License ##
 

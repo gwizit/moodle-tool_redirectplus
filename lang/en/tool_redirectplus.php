@@ -221,3 +221,18 @@ $string['redirect_configuration'] = 'Redirect Configuration';
 // Welcome message.
 $string['welcome_title'] = 'Welcome to Redirect Plus!';
 $string['welcome_message'] = 'Redirect Plus is a powerful tool that gives you complete control over your Moodle site\'s redirects and 404 error handling. Create custom redirects with optional conditional logic based on user login status or language preference. The plugin also records 404 errors and allows you to customize how they are handled - either display a custom message or redirect users to a specific page. Get started by reviewing the setup instructions below and configuring your preferences.';
+
+// Placeholder text for form fields.
+$string['placeholder_sourceurl'] = '/old-page';
+$string['placeholder_destinationurl'] = 'https://example.com/new-page';
+$string['placeholder_loggedin_url'] = 'https://example.com/member-page';
+$string['placeholder_loggedout_url'] = 'https://example.com/guest-page';
+$string['placeholder_default_language_url'] = 'https://example.com/default-page';
+$string['placeholder_404_redirect_url'] = 'https://example.com/404-page';
+
+// Test section strings.
+$string['test_automated_heading'] = 'Automated Browser Test';
+$string['test_automated_description'] = 'Click the button below to open a test page in a new window. The test will verify that the 404 error was logged to the database:';
+$string['test_manual_description'] = 'You can also manually test by clicking this link (opens in new tab):';
+$string['test_manual_link'] = 'Open Manual Test Page';
+$string['test_manual_check_notice'] = 'After clicking, check the "404 Errors" tab to see if it was logged.';

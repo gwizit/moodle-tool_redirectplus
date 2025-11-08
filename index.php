@@ -140,8 +140,8 @@ if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALP
     
     // 404 behavior settings.
     $behavior = optional_param('behavior', 'message', PARAM_ALPHA);
-    $redirect_url = optional_param('redirect_url', '', PARAM_TEXT);
-    $custom_message = optional_param('custom_message', '', PARAM_RAW);
+    $redirect_url = optional_param('redirect_url', '', PARAM_URL);
+    $custom_message = optional_param('custom_message', '', PARAM_CLEANHTML);
     $custom_message_format = optional_param('custom_message_format', FORMAT_HTML, PARAM_INT);
     $disable_redirect_admin = optional_param('disable_redirect_admin', 0, PARAM_INT);
 
@@ -149,11 +149,8 @@ if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALP
     set_config('disable_redirect_admin', $disable_redirect_admin, 'tool_redirectplus');
 
     if ($behavior === 'redirect') {
-        if (!empty($redirect_url) && filter_var($redirect_url, FILTER_VALIDATE_URL)) {
+        if (!empty($redirect_url)) {
             set_config('redirect_url', $redirect_url, 'tool_redirectplus');
-        } else if (!empty($redirect_url)) {
-            $error_url = new moodle_url($baseurl, [], 'settings');
-            redirect($error_url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
         set_config('custom_message', $custom_message, 'tool_redirectplus');
@@ -244,7 +241,7 @@ if ($show_edit_form) {
 
 // Initialize cache for redirects list.
 $redirects_cache = cache::make('tool_redirectplus', 'redirectslist');
-$cache_key = 'redirects_table_html_v2'; // Increment version to invalidate old cache with hash fragments
+$cache_key = 'redirects_table_html_v3'; // Increment version to invalidate old cache (v3: icon instead of checkmark)
 
 // Try to get cached redirects data.
 $cached_data = $redirects_cache->get($cache_key);
@@ -287,10 +284,10 @@ if ($cached_data === false) {
         } else {
             $opts_summary = get_string('conditionalredirect', 'tool_redirectplus');
             if (!empty($redirect_opts['use_login_param'])) {
-                $opts_summary .= '<br><small>✓ ' . get_string('useloginparam', 'tool_redirectplus') . '</small>';
+                $opts_summary .= '<br><small><i class="fa fa-check text-success"></i> ' . get_string('useloginparam', 'tool_redirectplus') . '</small>';
             }
             if (!empty($redirect_opts['use_language_param'])) {
-                $opts_summary .= '<br><small>✓ ' . get_string('uselanguageparam', 'tool_redirectplus') . '</small>';
+                $opts_summary .= '<br><small><i class="fa fa-check text-success"></i> ' . get_string('uselanguageparam', 'tool_redirectplus') . '</small>';
             }
         }
         

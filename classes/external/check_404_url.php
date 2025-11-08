@@ -107,6 +107,7 @@ class check_404_url extends external_api {
     public static function execute_returns() {
         return new external_single_structure([
             'found' => new external_value(PARAM_BOOL, 'Whether the URL was found in the log'),
+            // PARAM_RAW is safe here as data comes from database and will be sanitized on output by the consuming code.
             'url' => new external_value(PARAM_RAW, 'The logged URL'),
             'useragent' => new external_value(PARAM_RAW, 'User agent string'),
             'ip' => new external_value(PARAM_RAW, 'IP address'),

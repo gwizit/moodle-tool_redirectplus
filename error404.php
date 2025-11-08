@@ -31,7 +31,7 @@ require_once(__DIR__ . '/lib.php');
 
 // Log the 404 error first - capture the ORIGINAL requested URL, not this error page.
 // The URL should be passed as a query parameter from the ErrorDocument directive.
-$url = optional_param('url', '', PARAM_RAW);
+$url = optional_param('url', '', PARAM_TEXT);
 
 // If not in query string, try server variables.
 if (empty($url)) {

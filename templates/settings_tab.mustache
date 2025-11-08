@@ -126,8 +126,8 @@
                         <strong>{{#str}}test_configuration, tool_redirectplus{{/str}}</strong>
                     </div>
                     <div class="card-body">
-                        <h5>Automated Browser Test</h5>
-                        <p>Click the button below to open a test page in a new window. The test will verify that the 404 error was logged to the database:</p>
+                        <h5>{{#str}}test_automated_heading, tool_redirectplus{{/str}}</h5>
+                        <p>{{#str}}test_automated_description, tool_redirectplus{{/str}}</p>
                         <button type="button" id="btn-test-404" class="btn btn-primary btn-lg">
                             <i class="fa fa-flask"></i> {{#str}}test_404_tracking, tool_redirectplus{{/str}}
                         </button>
@@ -137,13 +137,13 @@
                         
                         <div class="alert alert-info">
                             <strong><i class="fa fa-info-circle"></i> {{#str}}manual_test, tool_redirectplus{{/str}}</strong>
-                            <p class="mb-2">You can also manually test by clicking this link (opens in new tab):</p>
+                            <p class="mb-2">{{#str}}test_manual_description, tool_redirectplus{{/str}}</p>
                             <p class="mb-2">
                                 <a href="#" id="manual-test-link" class="btn btn-outline-primary" target="_blank">
-                                    <i class="fa fa-external-link"></i> Open Manual Test Page
+                                    <i class="fa fa-external-link"></i> {{#str}}test_manual_link, tool_redirectplus{{/str}}
                                 </a>
                             </p>
-                            <p class="mt-2 mb-0"><small>After clicking, check the "404 Errors" tab to see if it was logged.</small></p>
+                            <p class="mt-2 mb-0"><small>{{#str}}test_manual_check_notice, tool_redirectplus{{/str}}</small></p>
                         </div>
                     </div>
                 </div>
@@ -222,7 +222,7 @@
 
                     <div class="form-group mb-3" id="redirect_section" style="display: {{#behavior_redirect}}block{{/behavior_redirect}}{{^behavior_redirect}}none{{/behavior_redirect}};">
                         <label for="id_redirect_url" class="font-weight-bold">{{#str}}redirecturl, tool_redirectplus{{/str}}</label>
-                        <input type="text" name="redirect_url" id="id_redirect_url" value="{{redirect_url}}" class="form-control" placeholder="https://example.com/404-page">
+                        <input type="text" name="redirect_url" id="id_redirect_url" value="{{redirect_url}}" class="form-control" placeholder="{{#str}}placeholder_404_redirect_url, tool_redirectplus{{/str}}">
                         <div class="form-text">{{#str}}redirecturl_help, tool_redirectplus{{/str}}</div>
                     </div>
                 </div>

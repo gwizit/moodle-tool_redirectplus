@@ -52,7 +52,7 @@
             <div class="form-group">
                 <label for="id_source_url">{{#str}}sourceurl, tool_redirectplus{{/str}} *</label>
                 <input type="text" name="source_url" id="id_source_url" value="{{source_url}}" 
-                       class="form-control" placeholder="/old-page" required>
+                       class="form-control" placeholder="{{#str}}placeholder_sourceurl, tool_redirectplus{{/str}}" required>
                 <small class="form-text text-muted">{{#str}}sourceurl_help, tool_redirectplus{{/str}}</small>
             </div>
             
@@ -85,7 +85,7 @@
                     <label for="id_destination_url">{{#str}}destinationurl, tool_redirectplus{{/str}} *</label>
                     <input type="url" name="destination_url" id="id_destination_url" 
                            value="{{destination_url}}" 
-                           class="form-control" placeholder="https://example.com/new-page">
+                           class="form-control" placeholder="{{#str}}placeholder_destinationurl, tool_redirectplus{{/str}}">
                     <small class="form-text text-muted">{{#str}}destinationurl_help, tool_redirectplus{{/str}}</small>
                 </div>
             </div>
@@ -111,14 +111,14 @@
                         <label for="id_loggedin_url">{{#str}}loggedin_url, tool_redirectplus{{/str}}</label>
                         <input type="url" name="loggedin_url" id="id_loggedin_url" 
                                value="{{loggedin_url}}" 
-                               class="form-control" placeholder="https://example.com/member-page">
+                               class="form-control" placeholder="{{#str}}placeholder_loggedin_url, tool_redirectplus{{/str}}">
                     </div>
                     
                     <div class="form-group ml-4">
                         <label for="id_loggedout_url">{{#str}}loggedout_url, tool_redirectplus{{/str}}</label>
                         <input type="url" name="loggedout_url" id="id_loggedout_url" 
                                value="{{loggedout_url}}" 
-                               class="form-control" placeholder="https://example.com/guest-page">
+                               class="form-control" placeholder="{{#str}}placeholder_loggedout_url, tool_redirectplus{{/str}}">
                     </div>
                 </div>
                 
@@ -209,7 +209,7 @@
                         <label for="id_default_language_url" class="font-weight-bold">{{#str}}defaultlanguageurl, tool_redirectplus{{/str}}</label>
                         <input type="url" name="default_language_url" id="id_default_language_url" 
                                value="{{default_language_url}}" 
-                               class="form-control" placeholder="https://example.com/default-page">
+                               class="form-control" placeholder="{{#str}}placeholder_default_language_url, tool_redirectplus{{/str}}">
                         <small class="form-text text-muted">{{#str}}defaultlanguageurl_help, tool_redirectplus{{/str}}</small>
                     </div>
                 </div>

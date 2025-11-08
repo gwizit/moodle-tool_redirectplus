@@ -2,6 +2,42 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [2.0.1] - 2025-11-07
+
+### Security & Internationalization Improvements
+
+**Security Enhancements**
+- Changed `PARAM_RAW` to `PARAM_CLEANHTML` for custom 404 message input (index.php)
+- Changed `PARAM_RAW` to `PARAM_TEXT` for URL parameter in error404.php
+- Changed `PARAM_TEXT` to `PARAM_URL` for redirect URL in settings
+- Added security comment for PARAM_RAW usage in external API return values
+- Removed redundant `filter_var()` validation (now handled by PARAM_URL)
+- All POST/GET parameters now properly validated with appropriate PARAM types
+
+**Internationalization**
+- Removed ALL hardcoded user-visible text from templates
+- Added 11 new language strings for placeholders and test section text
+- Updated `edit_redirect_form.mustache` to use language strings for placeholders
+- Updated `settings_tab.mustache` to use language strings for test section
+- Replaced hardcoded checkmark "✓" with FontAwesome icon in index.php
+- All templates now fully support multi-language installations
+
+**Documentation Updates**
+- **IMPORTANT:** Added strong recommendation to use Apache/Nginx server configuration for 404 logging
+- Added detailed warning about `.htaccess` method limitations
+- Clarified that `.htaccess` does NOT work with PHP-FPM or FastCGI
+- Updated README.md with comprehensive server configuration guidance
+- Explained why server configuration access is highly recommended
+- Added troubleshooting notes for 500 errors with `.htaccess` method
+
+**Cache Management**
+- Incremented cache key version to v3 to invalidate old cached HTML
+- Cache now uses FontAwesome icons instead of Unicode checkmarks
+
+### Version Bump
+- Updated to v2.0.1 (2025110700)
+- Major version increment due to security improvements
+
 ## [1.8.1] - 2025-11-06
 
 ### UI/UX Improvements
