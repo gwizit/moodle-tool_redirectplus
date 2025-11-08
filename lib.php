@@ -25,20 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Helper function to add a hash fragment to a URL, ensuring no duplicates.
- *
- * @param string $url The base URL
- * @param string $hash The hash fragment (without #)
- * @return string The URL with hash appended (no duplicates)
- */
-function tool_redirectplus_add_hash($url, $hash) {
-    // Remove any existing hash fragments from the URL
-    $url = preg_replace('/#.*$/', '', $url);
-    // Add the new hash
-    return $url . '#' . $hash;
-}
-
-/**
  * Get plugin configuration with caching.
  *
  * @return stdClass Object containing all plugin settings

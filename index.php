@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Redirect Plus - Main Management Page with Tabs
@@ -241,7 +241,7 @@ if ($show_edit_form) {
 
 // Initialize cache for redirects list.
 $redirects_cache = cache::make('tool_redirectplus', 'redirectslist');
-$cache_key = 'redirects_table_html_v3'; // Increment version to invalidate old cache (v3: icon instead of checkmark)
+$cache_key = 'redirects_table_html_v4'; // Increment version to invalidate old cache (v4: data-confirm-message instead of onclick)
 
 // Try to get cached redirects data.
 $cached_data = $redirects_cache->get($cache_key);
@@ -318,7 +318,10 @@ if ($cached_data === false) {
         $actions = html_writer::link($edit_url->out(false), get_string('edit'), 
             ['class' => 'btn btn-sm btn-secondary redirect-edit-btn']) . ' ' .
             html_writer::link($delete_url->out(false), get_string('delete'), 
-            ['class' => 'btn btn-sm btn-danger redirect-delete-btn', 'onclick' => 'return confirm(\'' . get_string('deleteredirectconfirm', 'tool_redirectplus') . '\');']);
+            [
+                'class' => 'btn btn-sm btn-danger redirect-delete-btn',
+                'data-confirm-message' => get_string('deleteredirectconfirm', 'tool_redirectplus')
+            ]);
         
         $redirect_row[] = $actions;
         

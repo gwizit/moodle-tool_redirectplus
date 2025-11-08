@@ -83,7 +83,15 @@ $tool_redirectplus_exclude = @(
     "package.json",
     "package-lock.json",
     "Gruntfile.js",
-    "textplus"
+    "textplus",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.bmp",
+    "*.svg",
+    "*.webp",
+    "*.ico"
 )
 
 # Create the ZIP file

@@ -23,14 +23,5 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Helper function used by the upgrade.php file.
- */
-function tool_redirectplus_helper_function() {
-    global $DB;
-
-    // Please note: you can only use raw low level database access here.
-    // Avoid Moodle API calls in upgrade steps.
-    //
-    // For more information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
-}
+// No upgrade helper functions currently needed.
+// This file is kept for future upgrade helper functions if needed.

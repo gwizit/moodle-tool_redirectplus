@@ -92,6 +92,15 @@ define(['jquery'], function($) {
                     $(this).attr('href', href + '#report');
                 }
             });
+            
+            // Handle all delete confirmations with data-confirm-message attribute
+            $(document).on('click', '.deleteall-confirm, .redirect-delete-btn, .report-delete-single', function(e) {
+                var message = $(this).data('confirm-message');
+                if (message && !confirm(message)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
         }
     };
 });
