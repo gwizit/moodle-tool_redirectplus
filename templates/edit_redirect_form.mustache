@@ -137,6 +137,26 @@
                 </div>
                 
                 <div id="language_param_section" style="display: none;">
+                    <!-- Language Detection Methods -->
+                    <div class="form-group ml-4 mb-3">
+                        <label class="font-weight-bold">{{#str}}detectlanguageby, tool_redirectplus{{/str}}</label>
+                        <small class="form-text text-muted mb-2">{{#str}}detectlanguageby_help, tool_redirectplus{{/str}}</small>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" name="detect_language_browser" id="id_detect_language_browser" value="1" 
+                                   class="custom-control-input language-detection-method" {{#detect_language_browser}}checked{{/detect_language_browser}}>
+                            <label for="id_detect_language_browser" class="custom-control-label">
+                                {{#str}}detectlanguagebrowser, tool_redirectplus{{/str}}
+                            </label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" name="detect_language_moodle" id="id_detect_language_moodle" value="1" 
+                                   class="custom-control-input language-detection-method" {{#detect_language_moodle}}checked{{/detect_language_moodle}}>
+                            <label for="id_detect_language_moodle" class="custom-control-label">
+                                {{#str}}detectlanguagemoodle, tool_redirectplus{{/str}}
+                            </label>
+                        </div>
+                    </div>
+                    
                     <div class="alert alert-info ml-4 mb-3">
                         <strong><i class="fa fa-info-circle"></i> {{#str}}language_priority_title, tool_redirectplus{{/str}}</strong>
                         <p class="mb-1">{{#str}}language_priority_desc, tool_redirectplus{{/str}}</p>

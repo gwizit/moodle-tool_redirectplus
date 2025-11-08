@@ -48,7 +48,7 @@ $PAGE->set_heading(get_string('pluginname', 'tool_redirectplus'));
 // Handle save redirect form submission.
 if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
     $source_url = required_param('source_url', PARAM_TEXT);
-    $enabled = optional_param('enabled', 1, PARAM_INT);
+    $enabled = optional_param('enabled', 0, PARAM_INT);
     $redirect_type = optional_param('redirect_type', 'simple', PARAM_ALPHA);
     $redirect_id = optional_param('id', 0, PARAM_INT);
     
@@ -70,6 +70,20 @@ if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
         $options['use_language_param'] = optional_param('use_language_param', 0, PARAM_INT);
         
         if ($options['use_language_param']) {
+            // Get language detection methods
+            $detect_browser = optional_param('detect_language_browser', 0, PARAM_INT);
+            $detect_moodle = optional_param('detect_language_moodle', 0, PARAM_INT);
+            
+            // Ensure at least one detection method is selected (default to browser if none selected)
+            if (!$detect_browser && !$detect_moodle) {
+                $detect_browser = 1;
+            }
+            
+            $options['language_detection_methods'] = [
+                'browser' => $detect_browser ? true : false,
+                'moodle' => $detect_moodle ? true : false,
+            ];
+            
             $lang_codes = optional_param_array('language_code', [], PARAM_TEXT);
             $lang_urls = optional_param_array('language_url', [], PARAM_URL);
             $language_rules = [];
@@ -138,7 +152,7 @@ if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALP
         if (!empty($redirect_url) && filter_var($redirect_url, FILTER_VALIDATE_URL)) {
             set_config('redirect_url', $redirect_url, 'tool_redirectplus');
         } else if (!empty($redirect_url)) {
-            $error_url = new moodle_url($PAGE->url, [], 'settings');
+            $error_url = new moodle_url($baseurl, [], 'settings');
             redirect($error_url, get_string('invalidurl', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
@@ -146,91 +160,50 @@ if (data_submitted() && confirm_sesskey() && optional_param('tab', '', PARAM_ALP
         set_config('custom_message_format', $custom_message_format, 'tool_redirectplus');
     }
 
+    // Invalidate plugin config cache.
+    $config_cache = cache::make('tool_redirectplus', 'pluginconfig');
+    $config_cache->purge();
+
     // Redirect back to settings tab.
-    $settings_url = new moodle_url($PAGE->url, [], 'settings');
+    $settings_url = new moodle_url($baseurl, [], 'settings');
     redirect($settings_url, get_string('settingssaved', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Handle delete redirect.
 $deleteredirect = optional_param('deleteredirect', 0, PARAM_INT);
 if ($deleteredirect && confirm_sesskey()) {
-    if ($confirm) {
-        $DB->delete_records('tool_redirectplus_redirects', ['id' => $deleteredirect]);
-        
-        // Invalidate redirects list cache.
-        $cache = cache::make('tool_redirectplus', 'redirectslist');
-        $cache->purge();
-        
-        redirect($PAGE->url, get_string('redirectdeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
-    } else {
-        $confirmurl = new moodle_url($PAGE->url, [
-            'deleteredirect' => $deleteredirect,
-            'confirm' => 1,
-            'sesskey' => sesskey(),
-        ]);
-        echo $OUTPUT->header();
-        echo $OUTPUT->confirm(
-            get_string('deleteredirectconfirm', 'tool_redirectplus'),
-            $confirmurl,
-            $PAGE->url
-        );
-        echo $OUTPUT->footer();
-        die();
-    }
+    $DB->delete_records('tool_redirectplus_redirects', ['id' => $deleteredirect]);
+    
+    // Invalidate redirects list cache.
+    $cache = cache::make('tool_redirectplus', 'redirectslist');
+    $cache->purge();
+    
+    $redirects_url = new moodle_url($baseurl, [], 'redirects');
+    redirect($redirects_url, get_string('redirectdeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Handle delete single 404 record.
 if ($delete && confirm_sesskey()) {
-    if ($confirm) {
-        $DB->delete_records('tool_redirectplus_404', ['id' => $delete]);
-        
-        // Invalidate 404 report cache.
-        $cache = cache::make('tool_redirectplus', 'report404');
-        $cache->purge();
-        
-        redirect($PAGE->url, get_string('recorddeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
-    } else {
-        $confirmurl = new moodle_url($PAGE->url, [
-            'delete' => $delete,
-            'confirm' => 1,
-            'sesskey' => sesskey(),
-        ]);
-        echo $OUTPUT->header();
-        echo $OUTPUT->confirm(
-            get_string('deleterecordconfirm', 'tool_redirectplus'),
-            $confirmurl,
-            $PAGE->url
-        );
-        echo $OUTPUT->footer();
-        die();
-    }
+    $DB->delete_records('tool_redirectplus_404', ['id' => $delete]);
+    
+    // Invalidate 404 report cache.
+    $cache = cache::make('tool_redirectplus', 'report404');
+    $cache->purge();
+    
+    $report_url = new moodle_url($baseurl, [], 'report');
+    redirect($report_url, get_string('recorddeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Handle delete all records.
 if ($deleteall && confirm_sesskey()) {
-    if ($confirm) {
-        $DB->delete_records('tool_redirectplus_404');
-        
-        // Invalidate 404 report cache.
-        $cache = cache::make('tool_redirectplus', 'report404');
-        $cache->purge();
-        
-        redirect($PAGE->url, get_string('allrecordsdeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
-    } else {
-        $confirmurl = new moodle_url($PAGE->url, [
-            'deleteall' => 1,
-            'confirm' => 1,
-            'sesskey' => sesskey(),
-        ]);
-        echo $OUTPUT->header();
-        echo $OUTPUT->confirm(
-            get_string('deleteallrecordsconfirm', 'tool_redirectplus'),
-            $confirmurl,
-            $PAGE->url
-        );
-        echo $OUTPUT->footer();
-        die();
-    }
+    $DB->delete_records('tool_redirectplus_404');
+    
+    // Invalidate 404 report cache.
+    $cache = cache::make('tool_redirectplus', 'report404');
+    $cache->purge();
+    
+    $report_url = new moodle_url($baseurl, [], 'report');
+    redirect($report_url, get_string('allrecordsdeleted', 'tool_redirectplus'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 // Get renderer.
@@ -240,7 +213,7 @@ $renderer = $PAGE->get_renderer('tool_redirectplus');
 $report_tab = $renderer->render_report_tab(
     $page,
     $perpage,
-    $PAGE->url
+    $baseurl
 );
 
 // REDIRECTS TAB - Build data.
@@ -271,7 +244,7 @@ if ($show_edit_form) {
 
 // Initialize cache for redirects list.
 $redirects_cache = cache::make('tool_redirectplus', 'redirectslist');
-$cache_key = 'redirects_table_html';
+$cache_key = 'redirects_table_html_v2'; // Increment version to invalidate old cache with hash fragments
 
 // Try to get cached redirects data.
 $cached_data = $redirects_cache->get($cache_key);
@@ -335,20 +308,20 @@ if ($cached_data === false) {
         // Last modified.
         $redirect_row[] = userdate($redirect->timemodified);
         
-        // Actions.
-        $edit_url = new moodle_url($PAGE->url, [
+        // Actions - DON'T add hash here since this HTML is cached
+        $edit_url = new moodle_url($baseurl, [
             'action' => 'edit',
             'editid' => $redirect->id,
         ]);
-        $delete_url = new moodle_url($PAGE->url, [
+        $delete_url = new moodle_url($baseurl, [
             'deleteredirect' => $redirect->id,
             'sesskey' => sesskey(),
         ]);
         
-        $actions = html_writer::link($edit_url, get_string('edit'), 
-            ['class' => 'btn btn-sm btn-secondary']) . ' ' .
-            html_writer::link($delete_url, get_string('delete'), 
-            ['class' => 'btn btn-sm btn-danger']);
+        $actions = html_writer::link($edit_url->out(false), get_string('edit'), 
+            ['class' => 'btn btn-sm btn-secondary redirect-edit-btn']) . ' ' .
+            html_writer::link($delete_url->out(false), get_string('delete'), 
+            ['class' => 'btn btn-sm btn-danger redirect-delete-btn', 'onclick' => 'return confirm(\'' . get_string('deleteredirectconfirm', 'tool_redirectplus') . '\');']);
         
         $redirect_row[] = $actions;
         
@@ -372,7 +345,7 @@ if ($cached_data === false) {
     $redirects_table_html = $cached_data['table_html'];
 }
 
-$add_redirect_url = new moodle_url($PAGE->url, ['action' => 'add']);
+$add_redirect_url = new moodle_url($baseurl, ['action' => 'add']);
 
 $redirects_tab = $renderer->render_redirects_tab(
     $has_redirects,
@@ -384,15 +357,7 @@ $redirects_tab = $renderer->render_redirects_tab(
 );
 
 // SETTINGS TAB - Build data (combined with setup instructions).
-$behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
-$redirect_url_config = get_config('tool_redirectplus', 'redirect_url');
-$custom_message = get_config('tool_redirectplus', 'custom_message');
-$disable_redirect_admin = get_config('tool_redirectplus', 'disable_redirect_admin') ?: 1;
-$enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
-if ($enable_404_logging === false) {
-    $enable_404_logging = 1; // Default to enabled.
-}
-$max_404_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
+$config = tool_redirectplus_get_config();
 $error404_url = $CFG->wwwroot . '/admin/tool/redirectplus/error404.php';
 
 // Initialize TinyMCE editor.
@@ -405,16 +370,16 @@ $editor->use_editor('id_custom_message', [
 ]);
 
 $settings_data = [
-    'form_action' => $PAGE->url->out(false),
+    'form_action' => $baseurl->out(false),
     'sesskey' => sesskey(),
-    'behavior' => $behavior,
-    'behavior_message' => $behavior === 'message',
-    'behavior_redirect' => $behavior === 'redirect',
-    'custom_message' => $custom_message,
-    'redirect_url' => $redirect_url_config,
-    'disable_redirect_admin' => $disable_redirect_admin,
-    'enable_404_logging' => $enable_404_logging,
-    'max_404_records' => $max_404_records,
+    'behavior' => $config->behavior,
+    'behavior_message' => $config->behavior === 'message',
+    'behavior_redirect' => $config->behavior === 'redirect',
+    'custom_message' => $config->custom_message,
+    'redirect_url' => $config->redirect_url,
+    'disable_redirect_admin' => $config->disable_redirect_admin,
+    'enable_404_logging' => $config->enable_404_logging,
+    'max_404_records' => $config->max_404_records,
     'error404_url' => $error404_url,
     'wwwroot' => $CFG->wwwroot,
 ];

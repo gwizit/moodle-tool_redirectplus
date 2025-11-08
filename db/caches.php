@@ -42,4 +42,13 @@ $definitions = [
         'staticacceleration' => true,
         'staticaccelerationsize' => 5,
     ],
+    
+    // Cache for plugin configuration settings.
+    'pluginconfig' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 1,
+    ],
 ];

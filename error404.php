@@ -73,12 +73,9 @@ $ip = getremoteaddr();
 $userid = $USER->id ?? 0;
 
 // Check if 404 logging is enabled.
-$enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
-if ($enable_404_logging === false) {
-    $enable_404_logging = 1; // Default to enabled if not set.
-}
+$config = tool_redirectplus_get_config();
 
-if ($enable_404_logging) {
+if ($config->enable_404_logging) {
     try {
         $record = new stdClass();
         $record->url = $url;
@@ -109,13 +106,13 @@ if (!tool_redirectplus_should_bypass_redirect()) {
     if ($custom_redirect) {
         // Get user context for conditional parameters.
         $is_logged_in = isloggedin() && !isguestuser();
-        $user_lang = tool_redirectplus_get_user_language();
         
         // Evaluate the redirect options to get destination URL.
+        // Note: Language detection is now handled internally based on redirect's detection method settings
         $destination = tool_redirectplus_evaluate_redirect(
             $custom_redirect,
             $is_logged_in,
-            $user_lang
+            ''
         );
         
         if ($destination) {
@@ -125,14 +122,9 @@ if (!tool_redirectplus_should_bypass_redirect()) {
     }
 }
 
-// Get plugin configuration for global behavior.
-$behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
-$redirect_url_config = get_config('tool_redirectplus', 'redirect_url');
-$custom_message = get_config('tool_redirectplus', 'custom_message');
-
-// Handle based on global behavior setting.
-if ($behavior === 'redirect' && !empty($redirect_url_config)) {
-    redirect($redirect_url_config);
+// Handle based on global behavior setting (config already loaded above).
+if ($config->behavior === 'redirect' && !empty($config->redirect_url)) {
+    redirect($config->redirect_url);
     exit;
 }
 
@@ -146,8 +138,8 @@ $PAGE->set_pagelayout('standard');
 echo $OUTPUT->header();
 
 // Display custom message if set, otherwise default message.
-if (!empty($custom_message)) {
-    echo format_text($custom_message, FORMAT_HTML);
+if (!empty($config->custom_message)) {
+    echo format_text($config->custom_message, FORMAT_HTML);
 } else {
     // Default 404 message.
     echo html_writer::tag('div', 

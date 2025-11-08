@@ -106,10 +106,10 @@ class hook_callbacks {
             
             // Get user context for conditional parameters.
             $is_logged_in = isloggedin() && !isguestuser();
-            $user_lang = \tool_redirectplus_get_user_language();
             
             // Evaluate the redirect options to get destination URL.
-            $destination_url = \tool_redirectplus_evaluate_redirect($redirect, $is_logged_in, $user_lang);
+            // Note: Language detection is now handled internally based on redirect's detection method settings
+            $destination_url = \tool_redirectplus_evaluate_redirect($redirect, $is_logged_in, '');
             
             if ($destination_url) {
                 // Perform the redirect using Moodle's redirect function.

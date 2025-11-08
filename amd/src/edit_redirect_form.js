@@ -67,6 +67,18 @@ define(['jquery'], function($) {
                 $('#language_param_section').toggle(this.checked);
             });
 
+            // Language detection method validation - prevent both from being unchecked
+            $('.language-detection-method').on('change', function() {
+                var browserChecked = $('#id_detect_language_browser').is(':checked');
+                var moodleChecked = $('#id_detect_language_moodle').is(':checked');
+                
+                // If trying to uncheck the last checked box, prevent it and show error
+                if (!browserChecked && !moodleChecked) {
+                    $(this).prop('checked', true);
+                    alert(config.strings.detectlanguageerror || 'At least one language detection method must be selected!');
+                }
+            });
+
             // Add language rule
             $('#add_language_rule').on('click', function() {
                 var container = $('#language_rules_container');

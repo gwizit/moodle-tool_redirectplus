@@ -35,7 +35,7 @@
 
     {{#has_errors}}
     <div class="tool-redirectplus-actions">
-        <a href="{{{deleteall_url}}}" class="btn btn-danger mb-3">{{#str}}deleteallrecords, tool_redirectplus{{/str}}</a>
+        <a href="{{{deleteall_url}}}" class="btn btn-danger mb-3" onclick="return confirm('{{#str}}deleteallrecordsconfirm, tool_redirectplus{{/str}}');">{{#str}}deleteallrecords, tool_redirectplus{{/str}}</a>
     </div>
 
     {{{table_html}}}

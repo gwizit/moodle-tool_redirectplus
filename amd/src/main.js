@@ -68,6 +68,30 @@ define(['jquery'], function($) {
             $(window).on('hashchange', function() {
                 activateTabFromHash();
             });
+            
+            // Add hash to redirect edit/delete buttons dynamically
+            $(document).on('click', '.redirect-edit-btn, .redirect-delete-btn', function(e) {
+                var href = $(this).attr('href');
+                // Only modify if it doesn't already have a hash
+                if (href && href.indexOf('#') === -1) {
+                    $(this).attr('href', href + '#redirects');
+                }
+            });
+            
+            // Add hash to report redirect/delete buttons dynamically
+            $(document).on('click', '.report-redirect-btn', function(e) {
+                var href = $(this).attr('href');
+                if (href && href.indexOf('#') === -1) {
+                    $(this).attr('href', href + '#redirects');
+                }
+            });
+            
+            $(document).on('click', '.report-delete-btn', function(e) {
+                var href = $(this).attr('href');
+                if (href && href.indexOf('#') === -1) {
+                    $(this).attr('href', href + '#report');
+                }
+            });
         }
     };
 });

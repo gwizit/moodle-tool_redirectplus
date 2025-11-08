@@ -126,6 +126,12 @@ class edit_redirect_form implements renderable, templatable {
         $data->loggedin_url = $this->redirect->options['loggedin_url'] ?? '';
         $data->loggedout_url = $this->redirect->options['loggedout_url'] ?? '';
         $data->use_language_param = !empty($this->redirect->options['use_language_param']);
+        
+        // Language detection methods (default to browser if not set)
+        $detection_methods = $this->redirect->options['language_detection_methods'] ?? ['browser' => true, 'moodle' => false];
+        $data->detect_language_browser = !empty($detection_methods['browser']);
+        $data->detect_language_moodle = !empty($detection_methods['moodle']);
+        
         $data->language_rules = $this->process_language_rules();
         $data->default_language_url = $this->redirect->options['default_language_url'] ?? '';
         $data->form_action = $this->baseurl->out(false);
@@ -141,6 +147,7 @@ class edit_redirect_form implements renderable, templatable {
             'languagecode_help' => get_string('languagecode_help', 'tool_redirectplus'),
             'languageurl' => get_string('languageurl', 'tool_redirectplus'),
             'delete' => get_string('delete', 'tool_redirectplus'),
+            'detectlanguageerror' => get_string('detectlanguageerror', 'tool_redirectplus'),
         ];
         
         return $data;

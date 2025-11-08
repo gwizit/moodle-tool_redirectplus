@@ -25,6 +25,52 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Helper function to add a hash fragment to a URL, ensuring no duplicates.
+ *
+ * @param string $url The base URL
+ * @param string $hash The hash fragment (without #)
+ * @return string The URL with hash appended (no duplicates)
+ */
+function tool_redirectplus_add_hash($url, $hash) {
+    // Remove any existing hash fragments from the URL
+    $url = preg_replace('/#.*$/', '', $url);
+    // Add the new hash
+    return $url . '#' . $hash;
+}
+
+/**
+ * Get plugin configuration with caching.
+ *
+ * @return stdClass Object containing all plugin settings
+ */
+function tool_redirectplus_get_config() {
+    $cache = cache::make('tool_redirectplus', 'pluginconfig');
+    $config = $cache->get('settings');
+    
+    if ($config === false) {
+        // Cache miss - load from database.
+        $config = new stdClass();
+        $config->behavior = get_config('tool_redirectplus', 'behavior') ?: 'message';
+        $config->redirect_url = get_config('tool_redirectplus', 'redirect_url');
+        $config->custom_message = get_config('tool_redirectplus', 'custom_message');
+        $config->custom_message_format = get_config('tool_redirectplus', 'custom_message_format') ?: FORMAT_HTML;
+        $config->disable_redirect_admin = get_config('tool_redirectplus', 'disable_redirect_admin');
+        if ($config->disable_redirect_admin === false) {
+            $config->disable_redirect_admin = 1; // Default to enabled.
+        }
+        $config->enable_404_logging = get_config('tool_redirectplus', 'enable_404_logging');
+        if ($config->enable_404_logging === false) {
+            $config->enable_404_logging = 1; // Default to enabled.
+        }
+        $config->max_404_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
+        
+        $cache->set('settings', $config);
+    }
+    
+    return $config;
+}
+
+/**
  * Find a matching custom redirect for the given URL.
  *
  * @param string $url The URL to match (without domain)
@@ -91,23 +137,31 @@ function tool_redirectplus_evaluate_redirect($redirect, $isloggedin, $userlang) 
     }
     
     // Then check language parameter if enabled (can override login-based URL).
-    if (!empty($options['use_language_param']) && !empty($userlang)) {
-        $userlang = strtolower($userlang);
+    if (!empty($options['use_language_param'])) {
+        // Get language detection methods, default to browser only for backward compatibility
+        $detection_methods = $options['language_detection_methods'] ?? ['browser' => true, 'moodle' => false];
         
-        if (!empty($options['language_rules']) && is_array($options['language_rules'])) {
-            // Process rules in order - stop at first match.
-            foreach ($options['language_rules'] as $rule) {
-                if (isset($rule['lang']) && !empty($rule['lang'])) {
-                    if (tool_redirectplus_match_language($rule['lang'], $userlang)) {
-                        $destinationurl = $rule['url'];
-                        break; // Stop at first match.
+        // Get user language using configured detection methods
+        $userlang = tool_redirectplus_get_user_language($detection_methods);
+        
+        if (!empty($userlang)) {
+            $userlang = strtolower($userlang);
+            
+            if (!empty($options['language_rules']) && is_array($options['language_rules'])) {
+                // Process rules in order - stop at first match.
+                foreach ($options['language_rules'] as $rule) {
+                    if (isset($rule['lang']) && !empty($rule['lang'])) {
+                        if (tool_redirectplus_match_language($rule['lang'], $userlang)) {
+                            $destinationurl = $rule['url'];
+                            break; // Stop at first match.
+                        }
                     }
                 }
-            }
-            
-            // If no match found, use default language URL if set.
-            if (!$destinationurl && !empty($options['default_language_url'])) {
-                $destinationurl = $options['default_language_url'];
+                
+                // If no match found, use default language URL if set.
+                if (!$destinationurl && !empty($options['default_language_url'])) {
+                    $destinationurl = $options['default_language_url'];
+                }
             }
         }
     }
@@ -129,7 +183,8 @@ function tool_redirectplus_should_bypass_redirect() {
     global $USER;
     
     // Check if the admin bypass setting is enabled.
-    $disableredirectadmin = get_config('tool_redirectplus', 'disable_redirect_admin');
+    $config = tool_redirectplus_get_config();
+    $disableredirectadmin = $config->disable_redirect_admin;
     
     if (!$disableredirectadmin) {
         return false; // Setting is disabled, don't bypass.
@@ -144,29 +199,50 @@ function tool_redirectplus_should_bypass_redirect() {
 }
 
 /**
- * Get the user's preferred language from browser headers.
+ * Get the user's language code for redirect evaluation.
  *
- * @return string The full language code (e.g., 'en-US', 'es-ES', 'pt-BR')
+ * @param array $detection_methods Array with 'browser' and/or 'moodle' keys set to true
+ * @return string The user's language code (e.g., 'en', 'en-us', 'pt-br')
  */
-function tool_redirectplus_get_user_language() {
-    // First try to get from Moodle user preference if logged in.
+function tool_redirectplus_get_user_language($detection_methods = ['browser' => true, 'moodle' => false]) {
     global $USER;
     
-    if (isloggedin() && !isguestuser() && !empty($USER->lang)) {
-        return strtolower($USER->lang);
+    // Ensure we have valid detection methods
+    if (empty($detection_methods)) {
+        $detection_methods = ['browser' => true, 'moodle' => false];
     }
     
-    // Otherwise get from browser Accept-Language header.
-    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-        $langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-        if (!empty($langs[0])) {
-            // Extract the full language code (before any semicolon).
-            $lang = trim(strtok($langs[0], ';'));
-            return strtolower($lang);
+    $detected_lang = '';
+    
+    // Try Moodle user language first if enabled
+    if (!empty($detection_methods['moodle'])) {
+        // Use current_language() which gets the active language for the current page/user
+        $moodle_lang = current_language();
+        if (!empty($moodle_lang)) {
+            $detected_lang = strtolower($moodle_lang);
+            // If only Moodle detection is enabled, return immediately
+            if (empty($detection_methods['browser'])) {
+                return $detected_lang;
+            }
         }
     }
     
-    return 'en'; // Default fallback.
+    // Try browser language if enabled
+    if (!empty($detection_methods['browser'])) {
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            if (!empty($langs[0])) {
+                // Extract the full language code (before any semicolon).
+                $browser_lang = trim(strtok($langs[0], ';'));
+                $detected_lang = strtolower($browser_lang);
+            }
+        }
+    }
+    
+    // If we got a Moodle lang but browser detection is also enabled, prefer browser
+    // (since browser was checked last in the logic above)
+    
+    return $detected_lang ?: 'en'; // Default fallback.
 }
 
 /**
@@ -204,7 +280,8 @@ function tool_redirectplus_match_language($pattern, $language) {
 function tool_redirectplus_prune_404_records() {
     global $DB;
     
-    $max_records = get_config('tool_redirectplus', 'max_404_records') ?: 1000;
+    $config = tool_redirectplus_get_config();
+    $max_records = $config->max_404_records;
     $current_count = $DB->count_records('tool_redirectplus_404');
     
     if ($current_count > $max_records) {
