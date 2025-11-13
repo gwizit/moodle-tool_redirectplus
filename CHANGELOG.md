@@ -2,6 +2,15 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [2.0.2] - 2025-11-13
+
+### External Audit Fixes
+
+**Moodle Plugin Review**
+- Addressed issues identified during external audit by Moodle developers
+- Fixed code quality and compliance issues prior to production release
+- Enhanced plugin standards compliance for Moodle plugins directory
+
 ## [2.0.1] - 2025-11-07
 
 ### Security & Internationalization Improvements
