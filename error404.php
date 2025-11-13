@@ -153,4 +153,5 @@ if (!empty($config->custom_message)) {
     );
 }
 
+
 echo $OUTPUT->footer();
