@@ -262,3 +262,8 @@ $string['js_restart_server'] = '3. Restart your web server';
 $string['js_run_test_again'] = '4. Run this test again';
 $string['js_test_url_attempted'] = 'Test URL attempted: <code>{$a}</code>';
 $string['js_test_error_checking'] = 'Failed to check database: {$a}';
+
+// cache definitions.
+$string['cachedef_report404'] = 'Cached 404 error report data to improve performance';
+$string['cachedef_redirectslist'] = 'Cached list of custom redirects for faster lookup';
+$string['cachedef_pluginconfig'] = 'Cached plugin configuration settings';
