@@ -30,11 +30,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
      * Test 404 tracking by opening a new tab
      */
     var test404Tracking = function() {
-        var buttonText = (config.strings && config.strings.test_404_tracking) ? 
-            config.strings.test_404_tracking : 'Run Automated Test';
+        var buttonText = config.strings.test_404_tracking;
         
         $('#btn-test-404').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span> ' + config.strings.testing);
-        $('#test-result-container').html('<div class="alert alert-info">Opening test page in new window...</div>');
+        $('#test-result-container').html('<div class="alert alert-info">' + config.strings.js_opening_test_page + '</div>');
         
         // Generate unique URL to test with timestamp
         var timestamp = Date.now();
@@ -47,19 +46,19 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
         if (!testWindow) {
             $('#test-result-container').html(
                 '<div class="alert alert-danger">' +
-                '<strong>Popup Blocked</strong><br>' +
-                'Your browser blocked the popup. Please allow popups for this site and try again, ' +
-                'or use the manual test link below.' +
+                '<strong>' + config.strings.js_popup_blocked + '</strong><br>' +
+                config.strings.js_popup_blocked_message +
                 '</div>'
             );
             $('#btn-test-404').prop('disabled', false).html('<i class="fa fa-flask"></i> ' + buttonText);
             return;
         }
         
+        var testUrlString = config.strings.js_test_url.replace('{$a}', randomPath);
         $('#test-result-container').html(
             '<div class="alert alert-info">' +
-            'Test page opened in new window. Waiting for page to load and error to be logged...<br>' +
-            '<small>Test URL: <code>' + randomPath + '</code></small>' +
+            config.strings.js_test_page_opened + '<br>' +
+            '<small>' + testUrlString + '</small>' +
             '</div>'
         );
         
@@ -70,7 +69,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 testWindow.close();
             }
             
-            $('#test-result-container').html('<div class="alert alert-info">Checking database for logged error...</div>');
+            $('#test-result-container').html('<div class="alert alert-info">' + config.strings.js_checking_database + '</div>');
             
             // Check if the specific URL was logged
             var checkRequest = Ajax.call([{
@@ -83,32 +82,38 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
             checkRequest.done(function(response) {
                 if (response.found) {
                     // Success! The 404 was logged
+                    var testUrlString = config.strings.js_test_url.replace('{$a}', randomPath);
+                    var userAgentString = config.strings.js_user_agent.replace('{$a}', response.useragent.substring(0, 60) + '...');
+                    var loggedAtString = config.strings.js_logged_at.replace('{$a}', response.time);
+                    
                     $('#test-result-container').html(
                         '<div class="alert alert-success">' +
-                        '<strong><i class="fa fa-check-circle"></i> ' + config.strings.test_success + '</strong><br>' +
-                        'The 404 error was successfully logged to the database!<br><br>' +
-                        '<strong>Details:</strong><br>' +
-                        'Test URL: <code>' + randomPath + '</code><br>' +
-                        'User Agent: <code>' + response.useragent.substring(0, 60) + '...</code><br>' +
-                        'Logged at: ' + response.time + '<br><br>' +
-                        '<i class="fa fa-check text-success"></i> Your 404 error tracking is working correctly!' +
+                        '<strong><i class="fa fa-check-circle"></i> ' + config.strings.js_test_success_title + '</strong><br>' +
+                        config.strings.js_test_success_message + '<br><br>' +
+                        '<strong>' + config.strings.js_details + '</strong><br>' +
+                        testUrlString + '<br>' +
+                        userAgentString + '<br>' +
+                        loggedAtString + '<br><br>' +
+                        '<i class="fa fa-check text-success"></i> ' + config.strings.js_tracking_working +
                         '</div>'
                     );
                 } else {
                     // Failed - no record found
+                    var testUrlAttemptedString = config.strings.js_test_url_attempted.replace('{$a}', randomPath);
+                    
                     $('#test-result-container').html(
                         '<div class="alert alert-warning">' +
-                        '<strong><i class="fa fa-exclamation-triangle"></i> Test Failed - No Logging Detected</strong><br><br>' +
-                        'The test page was opened, but the 404 error was NOT logged to the database.<br><br>' +
-                        '<strong>This means:</strong><br>' +
-                        '• Your web server is NOT configured to use the error404.php file as the error handler<br>' +
-                        '• You need to configure Apache or Nginx following the instructions above<br><br>' +
-                        '<strong>Next Steps:</strong><br>' +
-                        '1. Expand the Apache or Nginx configuration section above<br>' +
-                        '2. Add the ErrorDocument directive to your server configuration<br>' +
-                        '3. Restart your web server<br>' +
-                        '4. Run this test again<br><br>' +
-                        'Test URL attempted: <code>' + randomPath + '</code>' +
+                        '<strong><i class="fa fa-exclamation-triangle"></i> ' + config.strings.js_test_failed_title + '</strong><br><br>' +
+                        config.strings.js_test_failed_message + '<br><br>' +
+                        '<strong>' + config.strings.js_this_means + '</strong><br>' +
+                        '• ' + config.strings.js_server_not_configured + '<br>' +
+                        '• ' + config.strings.js_need_configure_server + '<br><br>' +
+                        '<strong>' + config.strings.js_next_steps + '</strong><br>' +
+                        config.strings.js_expand_config_section + '<br>' +
+                        config.strings.js_add_error_directive + '<br>' +
+                        config.strings.js_restart_server + '<br>' +
+                        config.strings.js_run_test_again + '<br><br>' +
+                        testUrlAttemptedString +
                         '</div>'
                     );
                 }
@@ -116,10 +121,11 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 $('#btn-test-404').prop('disabled', false).html('<i class="fa fa-flask"></i> ' + buttonText);
             }).fail(function(ex) {
                 Notification.exception(ex);
+                var errorMessage = config.strings.js_test_error_checking.replace('{$a}', ex.message || 'Unknown error');
                 $('#test-result-container').html(
                     '<div class="alert alert-danger">' +
                     '<strong>' + config.strings.test_error + '</strong><br>' +
-                    'Failed to check database: ' + (ex.message || 'Unknown error') +
+                    errorMessage +
                     '</div>'
                 );
                 $('#btn-test-404').prop('disabled', false).html('<i class="fa fa-flask"></i> ' + buttonText);

@@ -75,7 +75,7 @@ define(['jquery'], function($) {
                 // If trying to uncheck the last checked box, prevent it and show error
                 if (!browserChecked && !moodleChecked) {
                     $(this).prop('checked', true);
-                    alert(config.strings.detectlanguageerror || 'At least one language detection method must be selected!');
+                    alert(config.strings.detectlanguageerror);
                 }
             });
 
