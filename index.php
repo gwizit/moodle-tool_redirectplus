@@ -48,6 +48,12 @@ $PAGE->set_heading(get_string('pluginname', 'tool_redirectplus'));
 // Handle save redirect form submission.
 if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
     $source_url = required_param('source_url', PARAM_TEXT);
+    
+    // Security check: prevent javascript: URLs in source_url.
+    if (preg_match('/^\s*javascript:/i', $source_url)) {
+        throw new moodle_exception('invalidurl', 'tool_redirectplus');
+    }
+
     $enabled = optional_param('enabled', 0, PARAM_INT);
     $redirect_type = optional_param('redirect_type', 'simple', PARAM_ALPHA);
     $redirect_id = optional_param('id', 0, PARAM_INT);
@@ -56,15 +62,32 @@ if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
     $options = ['type' => $redirect_type];
     
     if ($redirect_type === 'simple') {
-        $options['destination_url'] = required_param('destination_url', PARAM_URL);
+        $dest_url = required_param('destination_url', PARAM_URL);
+        // Security check: prevent javascript: URLs.
+        if (preg_match('/^\s*javascript:/i', $dest_url)) {
+            throw new moodle_exception('invalidurl', 'tool_redirectplus');
+        }
+        $options['destination_url'] = $dest_url;
     } else {
         // Conditional redirect.
-        $options['destination_url'] = optional_param('destination_url', '', PARAM_URL);
+        $dest_url = optional_param('destination_url', '', PARAM_URL);
+        if (!empty($dest_url) && preg_match('/^\s*javascript:/i', $dest_url)) {
+            throw new moodle_exception('invalidurl', 'tool_redirectplus');
+        }
+        $options['destination_url'] = $dest_url;
+
         $options['use_login_param'] = optional_param('use_login_param', 0, PARAM_INT);
         
         if ($options['use_login_param']) {
-            $options['loggedin_url'] = required_param('loggedin_url', PARAM_URL);
-            $options['loggedout_url'] = required_param('loggedout_url', PARAM_URL);
+            $loggedin_url = required_param('loggedin_url', PARAM_URL);
+            $loggedout_url = required_param('loggedout_url', PARAM_URL);
+            
+            if (preg_match('/^\s*javascript:/i', $loggedin_url) || preg_match('/^\s*javascript:/i', $loggedout_url)) {
+                throw new moodle_exception('invalidurl', 'tool_redirectplus');
+            }
+            
+            $options['loggedin_url'] = $loggedin_url;
+            $options['loggedout_url'] = $loggedout_url;
         }
         
         $options['use_language_param'] = optional_param('use_language_param', 0, PARAM_INT);
@@ -90,6 +113,9 @@ if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
             
             for ($i = 0; $i < count($lang_codes); $i++) {
                 if (!empty($lang_codes[$i]) && !empty($lang_urls[$i])) {
+                    if (preg_match('/^\s*javascript:/i', $lang_urls[$i])) {
+                        continue; // Skip invalid URLs.
+                    }
                     $language_rules[] = [
                         'lang' => strtolower(trim($lang_codes[$i])),
                         'url' => $lang_urls[$i],
@@ -98,7 +124,11 @@ if (data_submitted() && confirm_sesskey() && $action === 'saveredirect') {
             }
             
             $options['language_rules'] = $language_rules;
-            $options['default_language_url'] = optional_param('default_language_url', '', PARAM_URL);
+            $default_lang_url = optional_param('default_language_url', '', PARAM_URL);
+            if (!empty($default_lang_url) && preg_match('/^\s*javascript:/i', $default_lang_url)) {
+                throw new moodle_exception('invalidurl', 'tool_redirectplus');
+            }
+            $options['default_language_url'] = $default_lang_url;
         }
     }
     

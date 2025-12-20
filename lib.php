@@ -80,7 +80,10 @@ function tool_redirectplus_find_redirect($url) {
         }
         
         // Pattern match with wildcards.
-        $pattern = str_replace(['*', '/'], ['.*', '\/'], $sourceurl);
+        // Escape special regex characters first, then convert wildcard * to .*
+        $pattern = preg_quote($sourceurl, '/');
+        $pattern = str_replace('\*', '.*', $pattern);
+        
         if (preg_match('/^' . $pattern . '$/', $cleanurl)) {
             return $redirect;
         }

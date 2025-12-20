@@ -13,7 +13,7 @@ While not required, donations help keep this plugin free, up-to-date, and featur
 #### 💳 Donate via Square
 **Quick and easy - any amount appreciated!**
 
-[**👉 Click Here to Donate**](https://square.link/u/C0Xn8NZw)
+[**👉 Click Here to Donate**](https://square.link/u/DMRTvZ0Y)
 
 **Your support makes a difference!** It helps me dedicate more time to:
 - Adding new features
@@ -390,7 +390,7 @@ grunt watch
 
 If this plugin has saved you time or made your Moodle site better, please consider showing your appreciation:
 
-### 💳 [**Donate via Square**](https://square.link/u/C0Xn8NZw)
+### 💳 [**Donate via Square**](https://square.link/u/DMRTvZ0Y)
 
 Your support helps fund:
 - ✨ New features and improvements
@@ -403,7 +403,10 @@ Your support helps fund:
 
 ## Support & Contact ##
 
-For issues, questions, or contributions, please contact:
+For bug reports and feature requests, please visit our issue tracker:
+👉 [**Report an Issue on GitHub**](https://github.com/gwizit/moodle-tool_redirectplus/issues)
+
+For other inquiries, please contact:
 - **Email:** support@gwizit.com
 - **Copyright:** 2025 G Wiz IT Solutions
 - **Website:** [gwizit.com](https://gwizit.com)

@@ -100,11 +100,19 @@ class report_tab implements renderable, templatable {
             // Referrer.
             $referrer = $record->referrer ?: '-';
             if ($referrer !== '-') {
-                $row[] = html_writer::link(
-                    $referrer,
-                    s($referrer),
-                    ['target' => '_blank']
-                );
+                // Validate referrer is a valid URL to prevent XSS (e.g. javascript:).
+                $clean_referrer = clean_param($referrer, PARAM_URL);
+                // Extra check to ensure no javascript: protocol even if clean_param allows it.
+                if (!empty($clean_referrer) && !preg_match('/^\s*javascript:/i', $clean_referrer)) {
+                    $row[] = html_writer::link(
+                        $clean_referrer,
+                        s($referrer),
+                        ['target' => '_blank']
+                    );
+                } else {
+                    // Display as text if not a valid URL.
+                    $row[] = s($referrer);
+                }
             } else {
                 $row[] = '-';
             }

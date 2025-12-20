@@ -2,6 +2,27 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [2.0.3] - 2025-12-19
+
+### Security Hardening
+
+**XSS Prevention**
+- Fixed Stored XSS vulnerability in 404 Report tab (Referrer column)
+- Added strict validation to prevent `javascript:` URLs in all redirect fields (Source, Destination, Login/Logout, Language URLs)
+- Implemented `clean_param` with `PARAM_URL` for referrer display
+
+**Regex Injection Fix**
+- Fixed potential regex injection in redirect matching logic
+- Now properly escaping special characters in source URLs while preserving `*` wildcard functionality
+- Ensures literal matching for characters like `.`, `?`, `+`
+
+### UI & Support
+
+**Support Links**
+- Added "Report an Issue" button to the donation banner in the plugin UI
+- Updated donation links to new Square URL
+- Updated README with direct links to GitHub issue tracker
+
 ## [2.0.2] - 2025-11-13
 
 ### External Audit Fixes

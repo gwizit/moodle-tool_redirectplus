@@ -214,6 +214,7 @@ $string['max_404_records_help'] = 'The maximum number of 404 error records to st
 $string['donation_title'] = 'Support Redirect Plus Development';
 $string['donation_message'] = 'If you find Redirect Plus useful, please consider making a donation to support continued development and maintenance. Your contribution helps keep this plugin free and up-to-date!';
 $string['donate_now'] = 'Donate Now';
+$string['report_issue'] = 'Report an Issue';
 
 // Redirect Configuration.
 $string['redirect_configuration'] = 'Redirect Configuration';
