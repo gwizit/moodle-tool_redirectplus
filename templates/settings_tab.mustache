@@ -41,7 +41,7 @@
     <!-- Setup Instructions Section - Collapsible -->
     <div class="card mb-3">
         <div class="card-header bg-info text-white">
-            <button type="button" id="toggleSetupInstructions" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
+            <button type="button" id="toggleSetupInstructions" class="btn btn-link text-white text-decoration-none p-0 w-100 text-start" style="font-size: 1.1em;">
                 <i class="fa fa-chevron-right" id="setupIcon"></i> <strong>{{#str}}viewsetupinstructions, tool_redirectplus{{/str}}</strong>
             </button>
         </div>
@@ -61,7 +61,7 @@
                 <!-- Apache Instructions -->
                 <div class="card mb-3">
                     <div class="card-header bg-info text-white">
-                        <a href="#" id="apacheToggle" class="text-decoration-none text-white font-weight-bold">
+                        <a href="#" id="apacheToggle" class="text-decoration-none text-white fw-bold">
                             <strong>{{#str}}apache_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
@@ -77,7 +77,7 @@
                 <!-- Nginx Instructions -->
                 <div class="card mb-3">
                     <div class="card-header bg-info text-white">
-                        <a href="#" id="nginxToggle" class="text-decoration-none text-white font-weight-bold">
+                        <a href="#" id="nginxToggle" class="text-decoration-none text-white fw-bold">
                             <strong>{{#str}}nginx_method, tool_redirectplus{{/str}}</strong> ({{#str}}recommended, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
@@ -93,7 +93,7 @@
                 <!-- .htaccess Manual Configuration Method -->
                 <div class="card mb-3">
                     <div class="card-header bg-info text-white">
-                        <a href="#" id="htaccessToggle" class="text-decoration-none text-white font-weight-bold">
+                        <a href="#" id="htaccessToggle" class="text-decoration-none text-white fw-bold">
                             <strong>{{#str}}htaccess_method, tool_redirectplus{{/str}}</strong> ({{#str}}fallback_only, tool_redirectplus{{/str}}) ▶
                         </a>
                     </div>
@@ -159,16 +159,16 @@
         <!-- Redirect Configuration Section -->
         <div class="card mb-3">
             <div class="card-header bg-info text-white">
-                <button type="button" id="redirectConfigToggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
+                <button type="button" id="redirectConfigToggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-start" style="font-size: 1.1em;">
                     <i class="fa fa-chevron-right" id="redirectConfigIcon"></i> <strong>{{#str}}redirect_configuration, tool_redirectplus{{/str}}</strong>
                 </button>
             </div>
             <div id="collapseRedirectConfig" class="collapse">
                 <div class="card-body">
                     <div class="form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" name="disable_redirect_admin" id="id_disable_redirect_admin" value="1" class="custom-control-input" {{#disable_redirect_admin}}checked{{/disable_redirect_admin}}>
-                            <label for="id_disable_redirect_admin" class="custom-control-label font-weight-bold">{{#str}}disableredirectadmin, tool_redirectplus{{/str}}</label>
+                        <div class="form-check">
+                            <input type="checkbox" name="disable_redirect_admin" id="id_disable_redirect_admin" value="1" class="form-check-input" {{#disable_redirect_admin}}checked{{/disable_redirect_admin}}>
+                            <label for="id_disable_redirect_admin" class="form-check-label fw-bold">{{#str}}disableredirectadmin, tool_redirectplus{{/str}}</label>
                         </div>
                         <div class="form-text">{{#str}}disableredirectadmin_help, tool_redirectplus{{/str}}</div>
                     </div>
@@ -179,22 +179,22 @@
         <!-- 404 Error Page Configuration Section -->
         <div class="card mb-3">
             <div class="card-header bg-info text-white">
-                <button type="button" id="error404Toggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-left" style="font-size: 1.1em;">
+                <button type="button" id="error404Toggle" class="btn btn-link text-white text-decoration-none p-0 w-100 text-start" style="font-size: 1.1em;">
                     <i class="fa fa-chevron-right" id="error404Icon"></i> <strong>{{#str}}error404_configuration, tool_redirectplus{{/str}}</strong>
                 </button>
             </div>
             <div id="collapseError404Config" class="collapse">
                 <div class="card-body">
                     <div class="form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" name="enable_404_logging" id="id_enable_404_logging" value="1" class="custom-control-input" {{#enable_404_logging}}checked{{/enable_404_logging}}>
-                            <label for="id_enable_404_logging" class="custom-control-label font-weight-bold">{{#str}}enable_404_logging, tool_redirectplus{{/str}}</label>
+                        <div class="form-check">
+                            <input type="checkbox" name="enable_404_logging" id="id_enable_404_logging" value="1" class="form-check-input" {{#enable_404_logging}}checked{{/enable_404_logging}}>
+                            <label for="id_enable_404_logging" class="form-check-label fw-bold">{{#str}}enable_404_logging, tool_redirectplus{{/str}}</label>
                         </div>
                         <div class="form-text">{{#str}}enable_404_logging_help, tool_redirectplus{{/str}}</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="id_max_404_records" class="font-weight-bold">{{#str}}max_404_records, tool_redirectplus{{/str}}</label>
+                        <label for="id_max_404_records" class="fw-bold">{{#str}}max_404_records, tool_redirectplus{{/str}}</label>
                         <input type="number" name="max_404_records" id="id_max_404_records" value="{{max_404_records}}" class="form-control" min="100" max="100000" step="100">
                         <div class="form-text">{{#str}}max_404_records_help, tool_redirectplus{{/str}}</div>
                     </div>
@@ -203,8 +203,8 @@
 
                     <h5>{{#str}}error404behavior, tool_redirectplus{{/str}}</h5>
                     <div class="form-group mb-4">
-                        <label for="id_behavior" class="font-weight-bold">{{#str}}behavior, tool_redirectplus{{/str}}</label>
-                        <select id="id_behavior" name="behavior" class="form-control">
+                        <label for="id_behavior" class="fw-bold">{{#str}}behavior, tool_redirectplus{{/str}}</label>
+                        <select id="id_behavior" name="behavior" class="form-select">
                             <option value="message" {{#behavior_message}}selected{{/behavior_message}}>{{#str}}behaviormessage, tool_redirectplus{{/str}}</option>
                             <option value="redirect" {{#behavior_redirect}}selected{{/behavior_redirect}}>{{#str}}behaviorredirect, tool_redirectplus{{/str}}</option>
                         </select>
@@ -212,7 +212,7 @@
                     </div>
 
                     <div class="form-group mb-4" id="message_section" style="display: {{#behavior_message}}block{{/behavior_message}}{{^behavior_message}}none{{/behavior_message}};">
-                        <label for="id_custom_message" class="font-weight-bold">{{#str}}custommessage, tool_redirectplus{{/str}}</label>
+                        <label for="id_custom_message" class="fw-bold">{{#str}}custommessage, tool_redirectplus{{/str}}</label>
                         <div id="fitem_id_custom_message" class="form-group">
                             <textarea id="id_custom_message" name="custom_message" rows="20" style="min-height: 400px; width: 100%;" class="form-control">{{{custom_message}}}</textarea>
                         </div>
@@ -221,7 +221,7 @@
                     </div>
 
                     <div class="form-group mb-3" id="redirect_section" style="display: {{#behavior_redirect}}block{{/behavior_redirect}}{{^behavior_redirect}}none{{/behavior_redirect}};">
-                        <label for="id_redirect_url" class="font-weight-bold">{{#str}}redirecturl, tool_redirectplus{{/str}}</label>
+                        <label for="id_redirect_url" class="fw-bold">{{#str}}redirecturl, tool_redirectplus{{/str}}</label>
                         <input type="text" name="redirect_url" id="id_redirect_url" value="{{redirect_url}}" class="form-control" placeholder="{{#str}}placeholder_404_redirect_url, tool_redirectplus{{/str}}">
                         <div class="form-text">{{#str}}redirecturl_help, tool_redirectplus{{/str}}</div>
                     </div>

@@ -2,6 +2,57 @@
 
 All notable changes to the Redirect Plus plugin will be documented in this file.
 
+## [2.1.0] - 2026-02-27
+
+### New Features
+
+**Redirect Toggle Switch**
+- Added inline toggle switch next to each redirect's status badge in the Custom Redirects tab
+- Flipping the toggle enables/disables the redirect via AJAX without a page reload
+- Status badge text and colour update dynamically to reflect the new state
+- Created new external service `tool_redirectplus_toggle_redirect` for the AJAX endpoint
+- Toggle is disabled during the request to prevent double-clicks; reverts on failure
+
+### Moodle 5.2 Compatibility
+
+**External API Migration**
+- Migrated `check_404_url` and `toggle_redirect` external services from legacy global classes (`external_api`, `external_value`, etc.) to the `core_external\*` namespace introduced in Moodle 4.2
+- Removed deprecated `require_once($CFG->libdir . '/externallib.php')` from both external service files
+
+**Bootstrap 5 Migration**
+- Replaced all Bootstrap 4 CSS classes with Bootstrap 5 equivalents across templates, PHP output, and JavaScript:
+  - `badge-success` / `badge-secondary` → `text-bg-success` / `text-bg-secondary`
+  - `custom-control custom-checkbox` → `form-check` (with `form-check-input` / `form-check-label`)
+  - `font-weight-bold` → `fw-bold`
+  - `ml-*` / `mr-*` → `ms-*` / `me-*`
+  - `text-left` / `text-right` → `text-start` / `text-end`
+  - `data-toggle` → `data-bs-toggle`
+  - `btn-block` → `d-block w-100`
+  - `form-row` → `row g-3`
+  - `form-control` on `<select>` → `form-select`
+
+**Version Requirements**
+- Bumped minimum Moodle version to 4.5 (`2024100700`) to ensure `core_external` namespace and Bootstrap 5 compatibility layer are available
+
+### Files Added
+- `classes/external/toggle_redirect.php` — new external service for toggling redirect status
+
+### Files Modified
+- `classes/external/check_404_url.php` — external API namespace migration
+- `db/services.php` — registered `toggle_redirect` external service
+- `index.php` — toggle switch HTML in redirects table, cache key bump to v5
+- `amd/src/redirects_tab.js` — AJAX toggle handler using `core/ajax`
+- `amd/src/main.js` — updated `data-bs-toggle` selector
+- `amd/src/edit_redirect_form.js` — updated `row g-3` in dynamic HTML
+- `amd/build/*.min.js` — rebuilt all minified JS
+- `templates/main.mustache` — `data-bs-toggle` on tab links
+- `templates/settings_tab.mustache` — BS5 form and utility classes
+- `templates/edit_redirect_form.mustache` — BS5 form and utility classes
+- `templates/donation_banner.mustache` — `text-end`
+- `styles.css` — toggle switch component styles
+- `lang/en/tool_redirectplus.php` — new strings for toggle feature
+- `version.php` — version 2026022700, release 2.1.0, requires Moodle 4.5
+
 ## [2.0.3] - 2025-12-19
 
 ### Security Hardening

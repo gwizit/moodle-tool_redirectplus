@@ -34,4 +34,13 @@ $functions = [
         'loginrequired' => true,
         'capabilities' => 'moodle/site:config'
     ],
+    'tool_redirectplus_toggle_redirect' => [
+        'classname' => 'tool_redirectplus\external\toggle_redirect',
+        'methodname' => 'execute',
+        'description' => 'Toggle a redirect enabled/disabled status',
+        'type' => 'write',
+        'ajax' => true,
+        'loginrequired' => true,
+        'capabilities' => 'moodle/site:config'
+    ],
 ];

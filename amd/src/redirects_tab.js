@@ -21,7 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notification) {
     'use strict';
 
     return {
@@ -29,18 +29,49 @@ define(['jquery'], function($) {
          * Initialize the redirects tab functionality.
          */
         init: function() {
-            // Add click handler to "Add New Redirect" button
+            // Add click handler to "Add New Redirect" button.
             $('#btn-add-redirect').on('click', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href') + '#redirects';
                 window.location.href = url;
             });
-            
-            // Add click handler to all edit buttons
+
+            // Add click handler to all edit buttons.
             $(document).on('click', 'a[href*="action=edit"]', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href') + '#redirects';
                 window.location.href = url;
+            });
+
+            // Toggle redirect enabled/disabled via AJAX.
+            $(document).on('change', '.redirect-toggle', function() {
+                var checkbox = $(this);
+                var redirectId = checkbox.data('redirect-id');
+                var badge = $('#redirect-status-badge-' + redirectId);
+
+                // Disable the toggle while the request is in flight.
+                checkbox.prop('disabled', true);
+
+                Ajax.call([{
+                    methodname: 'tool_redirectplus_toggle_redirect',
+                    args: {id: redirectId}
+                }])[0].done(function(response) {
+                    if (response.success) {
+                        // Update badge text and class to reflect the new status.
+                        badge.text(response.statustext);
+                        if (response.enabled) {
+                            badge.removeClass('text-bg-secondary').addClass('text-bg-success');
+                        } else {
+                            badge.removeClass('text-bg-success').addClass('text-bg-secondary');
+                        }
+                    }
+                    checkbox.prop('disabled', false);
+                }).fail(function(error) {
+                    // Revert the checkbox on failure.
+                    checkbox.prop('checked', !checkbox.prop('checked'));
+                    checkbox.prop('disabled', false);
+                    Notification.exception(error);
+                });
             });
         }
     };

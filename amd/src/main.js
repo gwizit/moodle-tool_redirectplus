@@ -55,7 +55,7 @@ define(['jquery'], function($) {
             });
             
             // Update hash when tab is clicked
-            $('.nav-link[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            $('.nav-link[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
                 var hash = $(e.target).attr('href');
                 if (history.pushState) {
                     history.pushState(null, null, hash);

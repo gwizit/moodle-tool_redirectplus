@@ -271,7 +271,7 @@ if ($show_edit_form) {
 
 // Initialize cache for redirects list.
 $redirects_cache = cache::make('tool_redirectplus', 'redirectslist');
-$cache_key = 'redirects_table_html_v4'; // Increment version to invalidate old cache (v4: data-confirm-message instead of onclick)
+$cache_key = 'redirects_table_html_v5'; // Increment version to invalidate old cache (v5: toggle switch for status)
 
 // Try to get cached redirects data.
 $cached_data = $redirects_cache->get($cache_key);
@@ -323,14 +323,25 @@ if ($cached_data === false) {
         
         $redirect_row[] = $opts_summary;
         
-        // Status.
-        if ($redirect->enabled) {
-            $redirect_row[] = html_writer::tag('span', get_string('enabled', 'tool_redirectplus'), 
-                ['class' => 'badge badge-success']);
-        } else {
-            $redirect_row[] = html_writer::tag('span', get_string('disabled', 'tool_redirectplus'), 
-                ['class' => 'badge badge-secondary']);
-        }
+        // Status with toggle switch.
+        $checked_attr = $redirect->enabled ? ' checked' : '';
+        $badge_class = $redirect->enabled ? 'badge text-bg-success' : 'badge text-bg-secondary';
+        $badge_text = $redirect->enabled
+            ? get_string('enabled', 'tool_redirectplus')
+            : get_string('disabled', 'tool_redirectplus');
+
+        $status_badge = html_writer::tag('span', $badge_text, [
+            'class' => $badge_class,
+            'id' => 'redirect-status-badge-' . $redirect->id,
+        ]);
+
+        $toggle_input = '<input type="checkbox" class="redirect-toggle" data-redirect-id="'
+            . $redirect->id . '"' . $checked_attr . '>';
+        $toggle_slider = '<span class="redirect-toggle-slider"></span>';
+        $toggle_label = '<label class="redirect-toggle-switch ms-2 mb-0" title="'
+            . get_string('toggleredirectstatus', 'tool_redirectplus') . '">' . $toggle_input . $toggle_slider . '</label>';
+
+        $redirect_row[] = '<div class="d-flex align-items-center">' . $status_badge . $toggle_label . '</div>';
         
         // Last modified.
         $redirect_row[] = userdate($redirect->timemodified);

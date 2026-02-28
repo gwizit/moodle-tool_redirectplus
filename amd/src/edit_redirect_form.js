@@ -97,7 +97,7 @@ define(['jquery'], function($) {
                             '</button>' +
                         '</div>' +
                     '</div>' +
-                    '<div class="form-row">' +
+                    '<div class="row g-3">' +
                         '<div class="col-md-6">' +
                             '<input type="text" name="language_code[]" class="form-control" placeholder="' + config.strings.languagecode + '">' +
                             '<small class="form-text text-muted">' + config.strings.languagecode_help + '</small>' +

@@ -160,7 +160,7 @@ class report_tab implements renderable, templatable {
                 ]);
             }
             $redirectbutton = html_writer::link($redirecturl->out(false), get_string('addeditredirect', 'tool_redirectplus'), [
-                'class' => 'btn btn-sm btn-block btn-primary mb-1 report-redirect-btn',
+                'class' => 'btn btn-sm d-block w-100 btn-primary mb-1 report-redirect-btn',
             ]);
             
             // Delete button.
@@ -169,7 +169,7 @@ class report_tab implements renderable, templatable {
                 'sesskey' => sesskey(),
             ]);
             $deletebutton = html_writer::link($deleteurl->out(false), get_string('delete'), [
-                'class' => 'btn btn-sm btn-block btn-danger report-delete-btn report-delete-single',
+                'class' => 'btn btn-sm d-block w-100 btn-danger report-delete-btn report-delete-single',
                 'data-confirm-message' => get_string('deleterecordconfirm', 'tool_redirectplus'),
             ]);
             

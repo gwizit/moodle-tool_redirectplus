@@ -57,9 +57,9 @@
             </div>
             
             <div class="form-group">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" name="enabled" id="id_enabled" value="1" class="custom-control-input" {{#enabled}}checked{{/enabled}}>
-                    <label for="id_enabled" class="custom-control-label">{{#str}}enableredirect, tool_redirectplus{{/str}}</label>
+                <div class="form-check">
+                    <input type="checkbox" name="enabled" id="id_enabled" value="1" class="form-check-input" {{#enabled}}checked{{/enabled}}>
+                    <label for="id_enabled" class="form-check-label">{{#str}}enableredirect, tool_redirectplus{{/str}}</label>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@
         <div class="card-body">
             <div class="form-group">
                 <label for="id_redirect_type">{{#str}}redirectoptions, tool_redirectplus{{/str}}</label>
-                <select name="redirect_type" id="id_redirect_type" class="form-control">
+                <select name="redirect_type" id="id_redirect_type" class="form-select">
                     <option value="simple" {{#is_simple}}selected{{/is_simple}}>{{#str}}basicredirect, tool_redirectplus{{/str}}</option>
                     <option value="conditional" {{#is_conditional}}selected{{/is_conditional}}>{{#str}}conditionalredirect, tool_redirectplus{{/str}}</option>
                 </select>
@@ -96,10 +96,10 @@
                 
                 <!-- Login Parameter -->
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox">
+                    <div class="form-check">
                         <input type="checkbox" name="use_login_param" id="id_use_login_param" value="1" 
-                               class="custom-control-input" {{#use_login_param}}checked{{/use_login_param}}>
-                        <label for="id_use_login_param" class="custom-control-label font-weight-bold">
+                               class="form-check-input" {{#use_login_param}}checked{{/use_login_param}}>
+                        <label for="id_use_login_param" class="form-check-label fw-bold">
                             {{#str}}useloginparam, tool_redirectplus{{/str}}
                         </label>
                     </div>
@@ -107,14 +107,14 @@
                 </div>
                 
                 <div id="login_param_section" style="display: none;">
-                    <div class="form-group ml-4">
+                    <div class="form-group ms-4">
                         <label for="id_loggedin_url">{{#str}}loggedin_url, tool_redirectplus{{/str}}</label>
                         <input type="url" name="loggedin_url" id="id_loggedin_url" 
                                value="{{loggedin_url}}" 
                                class="form-control" placeholder="{{#str}}placeholder_loggedin_url, tool_redirectplus{{/str}}">
                     </div>
                     
-                    <div class="form-group ml-4">
+                    <div class="form-group ms-4">
                         <label for="id_loggedout_url">{{#str}}loggedout_url, tool_redirectplus{{/str}}</label>
                         <input type="url" name="loggedout_url" id="id_loggedout_url" 
                                value="{{loggedout_url}}" 
@@ -126,10 +126,10 @@
                 
                 <!-- Language Parameter -->
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox">
+                    <div class="form-check">
                         <input type="checkbox" name="use_language_param" id="id_use_language_param" value="1" 
-                               class="custom-control-input" {{#use_language_param}}checked{{/use_language_param}}>
-                        <label for="id_use_language_param" class="custom-control-label font-weight-bold">
+                               class="form-check-input" {{#use_language_param}}checked{{/use_language_param}}>
+                        <label for="id_use_language_param" class="form-check-label fw-bold">
                             {{#str}}uselanguageparam, tool_redirectplus{{/str}}
                         </label>
                     </div>
@@ -138,26 +138,26 @@
                 
                 <div id="language_param_section" style="display: none;">
                     <!-- Language Detection Methods -->
-                    <div class="form-group ml-4 mb-3">
-                        <label class="font-weight-bold">{{#str}}detectlanguageby, tool_redirectplus{{/str}}</label>
+                    <div class="form-group ms-4 mb-3">
+                        <label class="fw-bold">{{#str}}detectlanguageby, tool_redirectplus{{/str}}</label>
                         <small class="form-text text-muted mb-2">{{#str}}detectlanguageby_help, tool_redirectplus{{/str}}</small>
-                        <div class="custom-control custom-checkbox">
+                        <div class="form-check">
                             <input type="checkbox" name="detect_language_browser" id="id_detect_language_browser" value="1" 
-                                   class="custom-control-input language-detection-method" {{#detect_language_browser}}checked{{/detect_language_browser}}>
-                            <label for="id_detect_language_browser" class="custom-control-label">
+                                   class="form-check-input language-detection-method" {{#detect_language_browser}}checked{{/detect_language_browser}}>
+                            <label for="id_detect_language_browser" class="form-check-label">
                                 {{#str}}detectlanguagebrowser, tool_redirectplus{{/str}}
                             </label>
                         </div>
-                        <div class="custom-control custom-checkbox">
+                        <div class="form-check">
                             <input type="checkbox" name="detect_language_moodle" id="id_detect_language_moodle" value="1" 
-                                   class="custom-control-input language-detection-method" {{#detect_language_moodle}}checked{{/detect_language_moodle}}>
-                            <label for="id_detect_language_moodle" class="custom-control-label">
+                                   class="form-check-input language-detection-method" {{#detect_language_moodle}}checked{{/detect_language_moodle}}>
+                            <label for="id_detect_language_moodle" class="form-check-label">
                                 {{#str}}detectlanguagemoodle, tool_redirectplus{{/str}}
                             </label>
                         </div>
                     </div>
                     
-                    <div class="alert alert-info ml-4 mb-3">
+                    <div class="alert alert-info ms-4 mb-3">
                         <strong><i class="fa fa-info-circle"></i> {{#str}}language_priority_title, tool_redirectplus{{/str}}</strong>
                         <p class="mb-1">{{#str}}language_priority_desc, tool_redirectplus{{/str}}</p>
                         <ul class="mb-0">
@@ -167,7 +167,7 @@
                         </ul>
                     </div>
                     
-                    <div id="language_rules_container" class="ml-4">
+                    <div id="language_rules_container" class="ms-4">
                         {{#language_rules}}
                         <div class="language-rule-row mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;">
                             <div class="mb-2 d-flex justify-content-between align-items-center">
@@ -181,7 +181,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-row">
+                            <div class="row g-3">
                                 <div class="col-md-6">
                                     <input type="text" name="language_code[]" value="{{lang}}" 
                                            class="form-control" placeholder="{{#str}}languagecode, tool_redirectplus{{/str}}">
@@ -199,14 +199,14 @@
                         {{/language_rules}}
                     </div>
                     
-                    <div class="ml-4 mb-3">
+                    <div class="ms-4 mb-3">
                         <button type="button" id="add_language_rule" class="btn btn-sm btn-secondary">
                             <i class="fa fa-plus"></i> {{#str}}addlanguagerule, tool_redirectplus{{/str}}
                         </button>
                     </div>
                     
-                    <div class="form-group ml-4">
-                        <label for="id_default_language_url" class="font-weight-bold">{{#str}}defaultlanguageurl, tool_redirectplus{{/str}}</label>
+                    <div class="form-group ms-4">
+                        <label for="id_default_language_url" class="fw-bold">{{#str}}defaultlanguageurl, tool_redirectplus{{/str}}</label>
                         <input type="url" name="default_language_url" id="id_default_language_url" 
                                value="{{default_language_url}}" 
                                class="form-control" placeholder="{{#str}}placeholder_default_language_url, tool_redirectplus{{/str}}">
